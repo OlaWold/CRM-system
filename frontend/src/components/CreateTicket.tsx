@@ -47,7 +47,7 @@ export function CreateTickets({showForm}: CreateTicketsProps) {
     }
 
     return (
-        <form onSubmit={createTickets}>
+        <form className="bg-white w-fit p-6 mt-5 rounded-2xl" onSubmit={createTickets}>
             <Field className="mt-10 w-100">
                 <FieldDescription>Firmanavn</FieldDescription>
                 <Input name="companyName"/>

@@ -52,7 +52,7 @@ export function GetTickets() {
 
     return (
         <>
-            <div className="mt-20 text-lg">
+            <div className="mt-20 bg-white rounded-2xl p-6 text-lg">
                 <Button
                     className="mb-8"
                     onChange={(e) => setSelectedStatus(e.target.value)}>
@@ -69,14 +69,14 @@ export function GetTickets() {
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead className="text-lg">Ticketnr.</TableHead>
-                            <TableHead className="text-lg">Emne</TableHead>
-                            <TableHead className="text-lg">Bedriftsnavn</TableHead>
-                            <TableHead className="text-lg">Status</TableHead>
-                            <TableHead className="text-lg">Sist oppdatert</TableHead>
+                            <TableHead className="text-xl">Ticketnr.</TableHead>
+                            <TableHead className="text-xl">Emne</TableHead>
+                            <TableHead className="text-xl">Bedriftsnavn</TableHead>
+                            <TableHead className="text-xl">Status</TableHead>
+                            <TableHead className="text-xl">Sist oppdatert</TableHead>
                         </TableRow>
                     </TableHeader>
-                    <TableBody>
+                    <TableBody className="text-lg">
                         {filteredTickets.map((ticket) => (
                         <TableRow key={ticket.id}
                                   onClick={() => navigate(`/tickets/${ticket.ticketNo}`)}

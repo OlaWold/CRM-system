@@ -90,7 +90,7 @@ export default function DisplayTickets() {
             {!ticket ? (
                 <p></p>
             ) : (
-                <div className="rounded-xl mt-20 flex flex-col border h-fit shadow-md border-gray-200">
+                <div className="rounded-xl mt-20 flex flex-col border h-fit shadow-md bg-white border-gray-200">
                     <div className="flex flex-col border-b p-6">
                         <div className="flex justify-between w-full items-start">
                             <h1 className="text-2xl">Ticket #{ticket.ticketNo}</h1>
