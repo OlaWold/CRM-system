@@ -1,9 +1,6 @@
 package com.example.crmproject.Tickets;
 
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -17,15 +14,29 @@ public class TicketController {
 
     public TicketController(TicketsService service) {
         this.service = service;
-    }
+    };
 
     @GetMapping
-    public Page<Tickets> findAll(Pageable pageable) {
-        return service.findAll(pageable);
+    public List<Tickets> findAll() {
+        return service.findAll();
     }
+
+    @GetMapping("/{ticketNo}")
+    public Tickets getByTicketNo(@PathVariable Long ticketNo) {
+        return service.getByTicketNo(ticketNo);
+    }
+
     @PostMapping
     public Tickets create(@Valid @RequestBody Tickets.CreateTicketRequest req) {
         return service.create(req);
+    }
+
+    public record UpdateTicketStatusRequest(Tickets.TicketStatus status) {
+    }
+
+    @PutMapping("/{ticketNo}")
+    public Tickets updateStatus(@PathVariable Long ticketNo, @RequestBody UpdateTicketStatusRequest request) {
+        return service.updateStatus(ticketNo, request.status);
     }
 }
 

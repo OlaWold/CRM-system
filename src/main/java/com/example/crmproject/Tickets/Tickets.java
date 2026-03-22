@@ -32,6 +32,9 @@ public class Tickets {
                 nullable = false)
         private String description;
 
+        @Column(name = "contact_name", nullable = false)
+        private String contactName;
+
         @Column(name =
                 "company_Name",
                 nullable = false)
@@ -49,8 +52,7 @@ public class Tickets {
 
         @CreationTimestamp
         @Column(name =
-                "created",
-                nullable = false)
+                "created")
         private Instant created;
 
         @UpdateTimestamp
@@ -73,6 +75,7 @@ public class Tickets {
                 Long ticketNo,
                 String subject,
                 String description,
+                String contactName,
                 String companyName,
                 String email,
                 String phone,
@@ -82,6 +85,7 @@ public class Tickets {
             this.ticketNo = ticketNo;
             this.description = description;
             this.subject = subject;
+            this.contactName = contactName;
             this.companyName = companyName;
             this.email = email;
             this.phone = phone;
@@ -119,10 +123,20 @@ public class Tickets {
         public record CreateTicketRequest(
                 @NotBlank String description,
                 @NotBlank String subject,
+                @NotBlank String contactName,
                 @NotBlank String companyName,
                 @NotBlank @Email String email,
-                @NotBlank String phone
+                @NotBlank String phone,
+                TicketStatus status
         ){}
+
+        public String getContactName() {
+                return contactName;
+        }
+
+        public void setContactName(String contactName) {
+                this.contactName = contactName;
+        }
 
         public Instant getUpdatedLast() {return updatedLast;}
         public void setUpdatedLast(Instant updatedLast)

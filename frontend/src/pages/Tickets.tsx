@@ -1,64 +1,25 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
-import * as React from "react";
+import {Button} from "@/components/ui/button";
+import {CreateTickets} from "@/components/CreateTicket";
+import {useState} from "react";
+import {GetTickets} from "@/components/GetTickets";
 
 export default function Tickets() {
 
-    const createTickets = async (e: React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    const [showForm, setShowForm] = useState(false);
 
-        const formEl = e.currentTarget;
-        const form = new FormData(formEl)
-
-        try {
-            const data = {
-                description: String(form.get("description") ?? ""),
-                subject: String(form.get("subject") ?? ""),
-                companyName: String(form.get("companyName") ?? ""),
-                email: String(form.get("email") ?? ""),
-                phone: String(form.get("phone") ?? ""),
-            };
-
-            const response = await fetch("http://localhost:8080/api/v1/tickets", {
-                method: "POST",
-                headers: {
-                    "Content-type": "application/json",
-                },
-                body: JSON.stringify(data)
-
-        });
-         if (!response.ok) {
-             throw new Error(await response.text());}
-
-         formEl.reset();
-        } catch (error) {
-        console.error(error)}
+    function openForm() {
+        setShowForm(prev => !prev);
     }
-
     return (
-                <form onSubmit={createTickets}>
-                    <Field>
-                    <FieldDescription>Firmanavn</FieldDescription>
-                    <Input name="companyName"/>
+        <>
+            <div className="">
+                <Button type="button" onClick={openForm}>Opprett Ticket</Button>
+                <CreateTickets  showForm={showForm} />
+            </div>
+            <div className="">
+                <GetTickets />
+            </div>
 
-                    <FieldDescription>Emne</FieldDescription>
-                    <Input name="subject"/>
-
-                    <FieldDescription>Beskrivelse</FieldDescription>
-                    <Input name="description"/>
-
-                    <FieldDescription>E-post</FieldDescription>
-                    <Input name="email"/>
-
-                    <FieldDescription>Telefon</FieldDescription>
-                    <Input name="phone"/>
-                    <FieldLabel></FieldLabel>
-                    <Button type="submit">Submit</Button>
-                </Field>
-
-                </form>
-
-    );
-
+        </>
+    )
 }
