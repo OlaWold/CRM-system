@@ -8,7 +8,7 @@ export default function Tickets() {
     const [showForm, setShowForm] = useState(false);
 
     function openForm() {
-        setShowForm(prev => !prev);
+        setShowForm(prev => !prev); // Gjør at man kan åpne og lukke vinduet ved å trykke på nytt.
     }
     return (
         <>

@@ -13,7 +13,7 @@ public class Notes {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "text", nullable = false)
+    @Column(name = "text", columnDefinition = "TEXT", nullable = false)
     private String text;
 
     @Column(name = "createdAt", nullable = false)

@@ -2,9 +2,9 @@ import {useEffect, useState} from "react";
 import {Button} from "@/components/ui/button";
 import {useNavigate} from "react-router-dom";
 
-
 export default function CountTickets() {
 
+    //bruker useState<number> fordi databasen kun sender en count av antall med en gitt status.
     const [allOpenTickets, setAllOpenTickets] = useState<number | null> (null);
     const [statusOpen, setStatusOpen] = useState<number | null> (null);
     const [statusWaiting, setStatusWaiting] = useState<number | null> (null);
@@ -15,6 +15,8 @@ export default function CountTickets() {
     useEffect(() => {
         async function LoadCount() {
             try {
+
+                // Alle fetchene fra databasen for de ulike dataene som ønskes skal vises.
                 const allOpenResponse = await fetch("http://localhost:8080/api/v1/tickets/count/not-closed")
                 const openRespons = await fetch("http://localhost:8080/api/v1/tickets/count?status=OPEN")
                 const waitingResponse = await fetch("http://localhost:8080/api/v1/tickets/count?status=WAITING")
