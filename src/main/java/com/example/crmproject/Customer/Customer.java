@@ -1,6 +1,10 @@
 package com.example.crmproject.Customer;
 
+import com.example.crmproject.Tickets.Tickets;
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table (name = "Customer")
@@ -10,7 +14,7 @@ public class Customer {
     private Long id;
 
     @Column(name = "customer_no", nullable = false, unique = true)
-    public String customerNo;
+    public Long customerNo;
 
     @Column(name = "company_name", nullable = false)
     private String companyName;
@@ -27,12 +31,19 @@ public class Customer {
     @Column(name = "phone", nullable = false, unique = true)
     private String phone;
 
+    @Column(name = "orgNumber", nullable = false, unique = true)
+    private String orgNumber;
+
+    @OneToMany(mappedBy = "customer")
+    private List<Tickets> tickets = new ArrayList<>();
+
     protected Customer() {
 
     }
 
-    public Customer(String customerNo, String companyName, String firstName, String lastName, String email, String phone) {
+    public Customer(Long customerNo, String orgNumber, String companyName, String firstName, String lastName, String email, String phone) {
         this.customerNo = customerNo;
+        this.orgNumber = orgNumber;
         this.companyName = companyName;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -41,8 +52,8 @@ public class Customer {
     }
 
     public Long getId() {return id;}
-    public String getCustomerNo() {return customerNo;}
-    public void setCustomerNo(String customerNo) {this.customerNo = customerNo;}
+    public Long getCustomerNo() {return customerNo;}
+    public void setCustomerNo(Long customerNo) {this.customerNo = customerNo;}
 
     public String getCompanyName() {return companyName;}
     public void setCompanyName(String companyName) {this.companyName = companyName;}
@@ -59,5 +70,12 @@ public class Customer {
     public String getPhone() {return phone;}
     public void setPhone(String phone) {this.phone = phone;}
 
+    public String getOrgNumber() {
+        return orgNumber;
+    }
+
+    public void setOrgNumber(String orgNumber) {
+        this.orgNumber = orgNumber;
+    }
 }
 

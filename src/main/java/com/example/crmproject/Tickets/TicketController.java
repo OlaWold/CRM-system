@@ -17,8 +17,8 @@ public class TicketController {
     };
 
     @GetMapping
-    public List<Tickets> findAll() {
-        return service.findAll();
+    public List<Tickets> getAllSortedByTicketNoAsc() {
+        return service.getAllSortedByTicketNoAsc();
     }
 
     @GetMapping("/{id}")
@@ -29,6 +29,21 @@ public class TicketController {
     @GetMapping("/count")
     public long countTicketsByStatus(@RequestParam Tickets.TicketStatus status) {
         return service.countTicketsByStatus(status);
+    }
+
+    @GetMapping("/customers/{customerId}")
+    public List<Tickets> getTicketsByCustomerId(@PathVariable Long customerId) {
+        return service.getByCustomerId(customerId);
+    };
+
+    @GetMapping("/previous-30-days")
+    public long getPrevious30DaysTickets() {
+        return service.getPrevious30DaysTickets();
+    }
+
+    @GetMapping("/previous-30-days/closed")
+    public long countClosedTickets() {
+        return service.countClosedLast30Days();
     }
 
     @GetMapping("/count/not-closed")

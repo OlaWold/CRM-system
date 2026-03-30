@@ -9,7 +9,7 @@ interface NavItem {
 
 
 const navItems: NavItem[] = [
-    { label: "DashboardT", path: "/" },
+    { label: "Dashboard", path: "/" },
     { label: "Kunder", path: "/customers" },
     { label: "Tickets", path: "/tickets"},
     { label: "Aktiviteter", path: "/activities" },
@@ -33,8 +33,8 @@ export default function Sidebar() {
                                 to={item.path}
                                 className={`block rounded-md px-4 py-2 text-center transition ${
                                     location.pathname === item.path
-                                        ? "text-blue-600" // Aktiv farge
-                                        : "hover:text-slate-500"
+                                        ? "text-gray-500 "// Aktiv farge
+                                        : "hover:text-gray-500"
                                 }`}
                             >
                                 {item.label}

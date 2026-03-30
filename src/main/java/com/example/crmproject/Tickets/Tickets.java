@@ -1,5 +1,6 @@
 package com.example.crmproject.Tickets;
 
+import com.example.crmproject.Customer.Customer;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -50,6 +51,11 @@ public class Tickets {
                 nullable = false)
         private String phone;
 
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "customer_id")
+        private Customer customer;
+
+
         @CreationTimestamp
         @Column(name =
                 "created")
@@ -73,6 +79,7 @@ public class Tickets {
 
         public Tickets(
                 Long ticketNo,
+                Customer customer,
                 String subject,
                 String description,
                 String contactName,
@@ -83,6 +90,7 @@ public class Tickets {
                 Instant created,
                 TicketStatus status ){
             this.ticketNo = ticketNo;
+            this.setCustomer( customer );
             this.description = description;
             this.subject = subject;
             this.contactName = contactName;
@@ -121,6 +129,7 @@ public class Tickets {
         {this.phone = phone;}
 
         public record CreateTicketRequest(
+                Long customerId,
                 @NotBlank String description,
                 @NotBlank String subject,
                 @NotBlank String contactName,
@@ -155,6 +164,12 @@ public class Tickets {
                 this.status = status;
         }
 
+        public Customer getCustomer() {
+                return customer;
+        }
 
+        public void setCustomer(Customer customer) {
+                this.customer = customer;
+        }
 }
 

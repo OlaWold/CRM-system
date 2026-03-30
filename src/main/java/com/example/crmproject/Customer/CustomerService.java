@@ -3,8 +3,10 @@ package com.example.crmproject.Customer;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 @Service
@@ -16,42 +18,40 @@ public class CustomerService {
         this.repo = repo;
     }
 
-    public List<Customer> getAll() {
-        return (List<Customer>) repo.findAll();
+    public List<Customer> getAllCustomers() {
+        return repo.findAllByOrderByIdDesc();
     }
 
-    // Her legges inn validering av kunder og søking på kunder
 
     public Customer create(Customer customer) {
-        validateCustomerNo(customer.getCustomerNo());
-        if (repo.existsByCustomerNo(customer.getCustomerNo())) {
-            throw new IllegalArgumentException("Kundenummeret eksisterer allerede");
-        }
+        Customer c = new Customer();
+        Long nextCustomerNo = repo.findMaxCustomerNo() + 1;
+        c.setCustomerNo(nextCustomerNo);
+        c.setOrgNumber(customer.getOrgNumber());
+        c.setFirstName(customer.getFirstName());
+        c.setLastName(customer.getLastName());
+        c.setEmail(customer.getEmail());
+        c.setPhone(customer.getPhone());
+
         return repo.save(customer);
     }
-    public Customer getByCustomerNo(String customerNo) {
-        return repo.findByCustomerNo(customerNo)
-                .orElseThrow(() -> new IllegalArgumentException("Fant ikke kundenummer med kundenummer " + customerNo));
+
+    public List<Customer> searchCustomers(String q) {
+        try {
+            Long customerNo = Long.parseLong(q);
+            return repo.findByCompanyNameContainingIgnoreCaseOrCustomerNo(q, customerNo);
+        } catch (NumberFormatException e) {
+            return repo.findByCompanyNameContainingIgnoreCase(q);
+        }
     }
-    public Page<Customer> getCustomers(Pageable pageable) {
-        return repo.findAll(pageable);
+
+    public Customer getById(Long id) {
+        return repo.findById(id).orElseThrow();
     }
 
     public Customer update(Long id, Customer input) {
         Customer existing = repo.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Fant ikke kunde med id " + id));
-
-        validateCustomerNo(input.getCustomerNo());
-
-        if (repo.existsByCustomerNoAndIdNot(input.getCustomerNo(), id)) {
-            throw new IllegalArgumentException("Kundenummeret eksisterer allerede");
-        }
-        if (repo.existsByEmailAndIdNot(input.getEmail(), id)) {
-            throw new IllegalArgumentException("E-postadressen eksisterer allerede");
-        }
-        if (repo.existsByPhoneAndIdNot(input.getPhone(), id)) {
-            throw new IllegalArgumentException("Telefonnummeret eksisterer allerede");
-        }
 
         existing.setCustomerNo(input.getCustomerNo());
         existing.setCompanyName(input.getCompanyName());
@@ -63,15 +63,9 @@ public class CustomerService {
         return repo.save(existing);
     }
 
-    private void validateCustomerNo(String customerNo) {
-        try {
-            int customerNoAsInt = Integer.parseInt(customerNo);
-            if (customerNoAsInt < 10000) {
-                throw new IllegalArgumentException("Kundenummerserien starter på 10000");
-            }
-        } catch (NumberFormatException ex) {
-            throw new IllegalArgumentException("Kundenummer må være et gyldig tall");
-        }
+    public long countCustomers() {
+        return repo.count();
     }
+
 
 }

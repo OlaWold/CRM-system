@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 
 import java.time.Instant;
 
+import static org.hibernate.Length.LONG32;
+
 @Entity
 @Table(name = "Notes")
 public class Notes {
@@ -13,7 +15,7 @@ public class Notes {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "text", columnDefinition = "TEXT", nullable = false)
+    @Column(name = "text", length = LONG32, nullable = false)
     private String text;
 
     @Column(name = "createdAt", nullable = false)
