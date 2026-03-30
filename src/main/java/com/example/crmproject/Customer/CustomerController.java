@@ -1,5 +1,7 @@
 package com.example.crmproject.Customer;
 
+import com.example.crmproject.Tickets.Tickets;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -31,10 +33,9 @@ public class CustomerController {
        return service.searchCustomers(q);
     }
 
-
-    @GetMapping("/exists")
-    public boolean exists(@RequestParam String companyName) {
-        return repo.existsByCompanyNameIgnoreCase(companyName);
+    @PostMapping
+    public Customer create(@Valid @RequestBody Customer.CreateCustomerRequest req) {
+        return service.create(req);
     }
 
     @GetMapping("/{id}")
@@ -42,10 +43,6 @@ public class CustomerController {
         return service.getById(id);
     }
 
-    @PostMapping
-    public Customer create(@RequestBody Customer customer) {
-        return service.create(customer);
-    }
 
     @PutMapping("/{id}")
     public Customer update(@PathVariable Long id, @RequestBody Customer customer) {

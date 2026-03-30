@@ -2,6 +2,8 @@ package com.example.crmproject.Customer;
 
 import com.example.crmproject.Tickets.Tickets;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +42,15 @@ public class Customer {
     protected Customer() {
 
     }
+
+    public record CreateCustomerRequest(
+            @NotBlank String orgNumber,
+            @NotBlank String firstName,
+            @NotBlank String lastName,
+            @NotBlank String companyName,
+            @NotBlank @Email String email,
+            @NotBlank String phone
+    ){}
 
     public Customer(Long customerNo, String orgNumber, String companyName, String firstName, String lastName, String email, String phone) {
         this.customerNo = customerNo;

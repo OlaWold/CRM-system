@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import {TableBody, Table, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import { Button } from "../ui/button";
 import {useNavigate} from "react-router-dom";
-import AddCustomer from "@/components/Customers/AddCustomer";
+import {CreateCustomer} from "@/components/Customers/CreateCustomer";
 import SearchCustomers from "@/components/Customers/SearchCustomers";
+import {CreateTickets} from "@/components/Tickets/CreateTicket";
 
 type Customer = {
     id: number;
@@ -17,12 +18,10 @@ type Customer = {
 
 export default function CustomerTable() {
     const [customers, setCustomers] = useState<Customer[]>([]);
+    const [showForm, setShowForm] = useState(false);
 
     const navigate = useNavigate();
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const refreshData = () => {
         console.log("Oppdaterer tabell...");
-    }
 
     useEffect(() => {
         const fetchCustomers = async () => {
@@ -35,8 +34,8 @@ export default function CustomerTable() {
 
                 const json = await res.json();
                 setCustomers(json);
-            } catch (Error) {
-                console.log("Error fetching customers");
+            } catch (error) {
+                console.log(error);
             }
         }
 
@@ -50,17 +49,26 @@ export default function CustomerTable() {
         <div className="relative mb-8"><SearchCustomers onSelect={(customer) => navigate(`/customers/${customer.id}`)} /> </div>
         <div className="bg-white p-6 text-lg rounded-4xl">
 
-            <div>
-                <AddCustomer isOpen={isModalOpen}
-                             onClose={() => setIsModalOpen(false)}
-                             onCustomerAdded={refreshData}
-                />
-                <Button
-                    onClick={() => {setIsModalOpen(true);}}
-                    className="">
-                    Opprett ny kunde
-                </Button>
-            </div>
+            <Button className="cursor-pointer" type="button" onClick={() => setShowForm(true)}>Opprett kunde</Button>
+
+            {showForm && (
+                <div className="fixed flex inset-0 z-50 justify-center items-center bg-black/50">
+                    <div className="bg-white p-6 w-full max-w-xl rounded-4xl">
+                        <div>
+                            <div className="flex justify-between">
+                                <h1 className="font-semibold ml-4">Ny kunde:</h1>
+                                <button onClick={() => setShowForm(false)} className="relative h-8 w-8 cursor-pointer">
+                                    <span className="absolute h-0.5 w-6 -translate-x-1/2 -translate-y-1/2 rotate-45 bg-black" />
+                                    <span className="absolute h-0.5 w-6 -translate-x-1/2 -translate-y-1/2 -rotate-45 bg-black" />
+                                </button>
+                            </div>
+
+                            <CreateCustomer />
+
+                        </div>
+                    </div>
+                </div>
+            )}
             <div className="flex bg-white border-b border-grey-200 mt-4">
 
                 <Table className="">

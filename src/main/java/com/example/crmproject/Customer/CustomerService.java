@@ -1,7 +1,9 @@
 package com.example.crmproject.Customer;
 
+import com.example.crmproject.Tickets.Tickets;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -23,18 +25,20 @@ public class CustomerService {
     }
 
 
-    public Customer create(Customer customer) {
+    public Customer create(Customer.CreateCustomerRequest req) {
         Customer c = new Customer();
         Long nextCustomerNo = repo.findMaxCustomerNo() + 1;
         c.setCustomerNo(nextCustomerNo);
-        c.setOrgNumber(customer.getOrgNumber());
-        c.setFirstName(customer.getFirstName());
-        c.setLastName(customer.getLastName());
-        c.setEmail(customer.getEmail());
-        c.setPhone(customer.getPhone());
+        c.setCompanyName(req.companyName());
+        c.setOrgNumber(req.orgNumber());
+        c.setFirstName(req.firstName());
+        c.setLastName(req.lastName());
+        c.setEmail(req.email());
+        c.setPhone(req.phone());
 
-        return repo.save(customer);
+        return repo.save(c);
     }
+
 
     public List<Customer> searchCustomers(String q) {
         try {
