@@ -53,27 +53,27 @@ Frontend kjører på http://localhost:5173
 
 ## Vidreutvikling
 
-innlogging og brukerroller
-aktivitetslogg på kunde og ticket
-filtrering, sortering og søk på flere felt
-vedlegg på saker
-e-posthistorikk per kunde
-statusendringer med tidsstempel
-prioritet på tickets: lav, medium, høy, kritisk
-tildeling av sak til ansatt
-kommentartråd på sak
-frist og forfallsdato
-visning av siste aktivitet på kunden
-arkivering av inaktive kunder
-egne kategorier eller tags på saker
-unngå at fetch kjører unødvendig i systemet når det ikke trengs
-SLA på tickets
-automatisk eskalering av gamle saker
-varsler i systemet
-intern chat eller kommentarer mellom ansatte
-kundehistorikk på tvers av alle saker
-kobling mot e-post så tickets kan opprettes fra innkommende mail
-rapportside for statistikk over tid
+* innlogging og brukerroller
+* aktivitetslogg på kunde og ticket
+* filtrering, sortering og søk på flere felt
+* vedlegg på saker
+* e-posthistorikk per kunde
+* statusendringer med tidsstempel
+* prioritet på tickets: lav, medium, høy, kritisk
+* tildeling av sak til ansatt
+* kommentartråd på sak
+* frist og forfallsdato
+* visning av siste aktivitet på kunden
+* arkivering av inaktive kunder
+* egne kategorier eller tags på saker
+* unngå at fetch kjører unødvendig i systemet når det ikke trengs
+* SLA på tickets
+* automatisk eskalering av gamle saker
+* varsler i systemet
+* intern chat eller kommentarer mellom ansatte
+* kundehistorikk på tvers av alle saker
+* kobling mot e-post så tickets kan opprettes fra innkommende mail
+* rapportside for statistikk over tid
 
 
 ### Klon prosjektet
