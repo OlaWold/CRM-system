@@ -79,5 +79,5 @@ Frontend kjører på http://localhost:5173
 ### Klon prosjektet
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/OlaWold/CRM-system.git
 cd Eget CRM
