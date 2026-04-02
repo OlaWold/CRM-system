@@ -4,7 +4,7 @@
     import {Button} from "@/components/ui/button";
     import {Textarea} from "@/components/ui/textarea";
     import {useEffect, useState} from "react";
-    import {Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue} from "@/components/ui/select";
+    import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 
     type Customer = {
         id: number;
@@ -25,7 +25,7 @@
 
     export function CreateTickets() {
 
-        const { register, control, watch, setValue, handleSubmit } = useForm<FormFields>(
+        const { register, control, watch, setValue, handleSubmit, setError, formState: { errors, isSubmitting } } = useForm<FormFields>(
             {
                 defaultValues: {
                     companyName: "",
@@ -35,7 +35,7 @@
                     contactName: "",
                     email: "",
                     phone: "",
-                    status: ""
+                    status: "OPEN"
                 }
             });
         const [customers, setCustomers] = useState<Customer[]>([]);
@@ -61,13 +61,14 @@
                 const data = await response.json();
                 setCustomers(data)
             } catch (error) {
-                console.error(error);
+                setError("root", { message: "Feil med et av feltene"})
             }
         },300)
             return () => clearTimeout(timeout);
-        }, [customerSearch, setValue]);
+        }, [customerSearch, setValue, setError]);
 
         const onSubmit: SubmitHandler<FormFields> = async (data)=> {
+            await new Promise((resolve) => setTimeout(resolve, 1000));
             try {
 
                 const ticketResponse= await fetch("http://localhost:8080/api/v1/tickets", {
@@ -83,7 +84,7 @@
                 console.log("Ticket Created Successfully");
 
             } catch (error) {
-                console.error(error);
+                setError("root", { message: "Feil med et av feltene"})
             }
         }
 
@@ -92,7 +93,9 @@
             <form className="flex flex-col p-4" onSubmit={handleSubmit(onSubmit)}>
                 <FieldDescription className="mt-4">Kundenavn eller kundenr.</FieldDescription>
                 <div className="relative">
-                <Input {...register("companyName")} type="text" placeholder="Kundenavn eller kundenr." />
+                <Input {...register("companyName",
+                    {required: "Bedriftsnavn må fylles ut"
+                })} type="text" placeholder="Kundenavn eller kundenr." />
 
                     {customers.length > 0 && (
                         <div className="relative top-full left-0 mt-2 w-full rounded-xl border bg-white shadow z-50">
@@ -112,21 +115,46 @@
                             ))}
                         </div>
                     )}
+                    {errors.companyName && <div className="text-red-500 mt-2 text-sm">{errors.companyName.message}</div>}
                 </div>
                 <FieldDescription className="mt-4">Emne:</FieldDescription>
-                <Input {...register("subject")} type="text" placeholder="Emne" />
+                <Input {...register("subject",
+                    {required: "Emne må fylles ut"
+                    })}
+                 type="text" placeholder="Emne" />
+                {errors.subject && <div className="text-red-500 mt-2 text-sm">{errors.subject.message}</div>}
 
                 <FieldDescription className="mt-4">Beskrivelse:</FieldDescription>
-                <Textarea {...register("description")} placeholder="Beskrivelse"/>
+                <Textarea {...register("description",
+                    {required: "Beskrivelse må fylles ut"
+                    })} placeholder="Beskrivelse"/>
+                {errors.description && <div className="text-red-500 mt-2 text-sm">{errors.description.message}</div>}
+
 
                 <FieldDescription className="mt-4">Kontaktperson:</FieldDescription>
-                <Input {...register("contactName")} type="text" placeholder="Kontaktperson"/>
+                <Input {...register("contactName",
+                    {required: "Kontaktperson må fylles ut"
+                    })} type="text" placeholder="Kontaktperson"/>
+                {errors.contactName && <div className="text-red-500 mt-2 text-sm">{errors.contactName.message}</div>}
 
                 <FieldDescription className="mt-4">E-post:</FieldDescription>
-                <Input {...register("email")} type="email" placeholder="E-mail"/>
+                <Input {...register("email",
+                    {required: "E-post må fylles ut",
+                        validate: (value) =>
+                        {if (!value.includes("@"))
+                            return "E-post må inneholde @"}})} type="text" placeholder="E-mail"
 
-                <FieldDescription className="mt-4">Telefonnummer:</FieldDescription>
-                <Input {...register("phone")} type="tel" placeholder="Telefonnummer"/>
+                />
+                {errors.email && <div className="text-red-500 mt-2 text-sm">{errors.email.message}</div>}
+
+                <FieldDescription className="mt-4">Telefonnummer</FieldDescription>
+                <Input {...register("phone",
+                    {required: "Telefonnr. må fylles ut",
+                        pattern: {
+                            value: /^\d{8}$/,
+                            message: "Nummer må bestå av 8 siffer"
+                        }})} type="text" placeholder="Telefonnummer"/>
+                {errors.phone && <div className="text-red-500 mt-2 text-sm">{errors.phone.message}</div>}
 
                 <FieldDescription className="mt-4">Status:</FieldDescription>
                 <Controller
@@ -148,7 +176,7 @@
                         </Select>
                     )}
                 />
-                <Button className="w-fit mt-6 cursor-pointer" type="submit">Opprett Ticket</Button>
+                <Button disabled={isSubmitting} className="w-fit mt-6 cursor-pointer" type="submit">{isSubmitting ? "Oppretter kunde...": "Opprett kunde"}</Button>
             </form>
         </>
     )

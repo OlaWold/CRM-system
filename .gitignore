@@ -8,3 +8,4 @@ target/
 *.iml
 out/
 .DS-Store
+.DS_Store
