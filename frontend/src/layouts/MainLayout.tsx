@@ -10,7 +10,7 @@ export default function MainLayout() {
     return (
         <div className="relative h-screen overflow-hidden bg-background">
             <aside
-                className={`fixed inset-y-0 left-0 z-40 w-64 border-r shadow-lg transition-transform duration-300 ease-in-out ${
+                className={`fixed inset-y-0 left-0 z-40 w-64 border-r shadow-lg bg-white transition-transform duration-300 ease-in-out ${
                     isSidebarOpen ? "translate-x-0" : "-translate-x-full"
                 }`}
             >

@@ -2,7 +2,7 @@ import {useForm, SubmitHandler} from 'react-hook-form'
 import {Input} from "@/components/ui/input";
 import {FieldDescription} from "@/components/ui/field";
 import {Button} from "@/components/ui/button";
-import {Textarea} from "@/components/ui/textarea";
+
 
 type FormFields = {
     companyName: string,
@@ -14,8 +14,7 @@ type FormFields = {
 }
 
 export function CreateCustomer() {
-
-    const { register, handleSubmit } = useForm<FormFields>(
+    const { register, handleSubmit, formState: { errors, isSubmitting}, setError } = useForm<FormFields>(
         {
             defaultValues: {
                 companyName: "",
@@ -29,9 +28,10 @@ export function CreateCustomer() {
         });
 
     const onSubmit: SubmitHandler<FormFields> = async (data)=> {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         try {
 
-            const ticketResponse= await fetch("http://localhost:8080/api/v1/customers", {
+            const ticketResponse = await fetch("http://localhost:8080/api/v1/customers", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(data),
@@ -44,7 +44,7 @@ export function CreateCustomer() {
             console.log("Ticket Created Successfully");
 
         } catch (error) {
-            console.error(error);
+            setError("root", { message: "Feil med et av feltene"})
         }
     }
 
@@ -52,24 +52,57 @@ export function CreateCustomer() {
         <>
             <form className="flex flex-col p-4" onSubmit={handleSubmit(onSubmit)}>
                 <FieldDescription className="mt-4">Bedriftsnavn:</FieldDescription>
-                <Input {...register("companyName")} placeholder="Bedriftsnavn"></Input>
+                <Input {...register("companyName",
+                    {required: "Bedriftsnavn må fylles ut"
+                    })}
+                       placeholder="Bedriftsnavn" />
+                {errors.companyName && <div className="text-red-500 mt-2 text-sm">{errors.companyName.message}</div>}
 
                 <FieldDescription className="mt-4">Org.nummer:</FieldDescription>
-                <Input {...register("orgNumber")} type="tel" placeholder="Org.nummer"/>
+                <Input {...register("orgNumber",
+                    {required: "Org.nummer må fylles ut",
+                        pattern: {
+                            value: /^\d{9}$/,
+                            message: "Org.nummer må være 9 siffer"
+                        }})}
+                       type="text" placeholder="Org.nummer"/>
+                {errors.orgNumber && <div className="text-red-500 mt-2 text-sm">{errors.orgNumber.message}</div>}
 
                 <FieldDescription className="mt-4">Fornavn:</FieldDescription>
-                <Input {...register("firstName")} type="text" placeholder="Fornavn:" />
+                <Input {...register("firstName",
+                    {required: "Fornavn må fylles ut"
+                        })} type="text" placeholder="Fornavn:" />
+                {errors.firstName && <div className="text-red-500 mt-2 text-sm">{errors.firstName.message}</div>}
 
                 <FieldDescription className="mt-4">Etternavn:</FieldDescription>
-                <Input {...register("lastName")} placeholder="Etternavn"/>
+                <Input {...register("lastName",
+                    {required: "Etternavn må fylles ut"
+                })} placeholder="Etternavn"/>
+                {errors.lastName && <div className="text-red-500 mt-2 text-sm">{errors.lastName.message}</div>}
 
                 <FieldDescription className="mt-4">Telefonnummer</FieldDescription>
-                <Input {...register("phone")} type="text" placeholder="Telefonnummer"/>
+                <Input {...register("phone",
+                    {required: "Telefonnr. må fylles ut",
+                    pattern: {
+                        value: /^\d{8}$/,
+                        message: "Nummer må bestå av 8 siffer"
+                    }})} type="text" placeholder="Telefonnummer"/>
+                {errors.phone && <div className="text-red-500 mt-2 text-sm">{errors.phone.message}</div>}
 
                 <FieldDescription className="mt-4">E-post:</FieldDescription>
-                <Input {...register("email")} type="email" placeholder="E-mail"/>
+                <Input {...register("email",
+                    {required: "E-post må fylles ut",
+                    validate: (value) =>
+                    {if (!value.includes("@"))
+                        return "E-post må inneholde @"}})} type="text" placeholder="E-mail"
 
-                <Button className="w-fit mt-6 cursor-pointer" type="submit">Opprett kunde</Button>
+                />
+                {errors.email && <div className="text-red-500 mt-2 text-sm">{errors.email.message}</div>}
+
+                <Button disabled={isSubmitting} className="w-fit mt-6 cursor-pointer" type="submit">
+                    {isSubmitting ? "Oppretter kunde...": "Opprett kunde"}
+                </Button>
+                { errors.root && <div className="text-red-500 mt-2 text-sm">{errors.root.message}</div> }
             </form>
         </>
     )

@@ -95,7 +95,7 @@ export default function DisplayCustomer() {
                         {/* Boksen for beskrivelse */}
                         <div className="grid grid-cols-1 mt-10 md:mt-1 p-4 gap-4 lg:grid-cols-2">
                             {/* Boken for Kontaktinfo */}
-                            <div className="border rounded-4xl h-[20vh] shadow-md border-gray-200 place-items-start text-xl justify-center">
+                            <div className="border rounded-4xl h-[30vh] md:h-[20vh] shadow-md border-gray-200 place-items-start text-xl justify-center">
                                 <div className="border-b w-full place-items-start text-xl justify-center p-4">
                                     <h1 className="text-xl px-4">Kundeinformasjon</h1>
                                 </div>
@@ -144,14 +144,14 @@ export default function DisplayCustomer() {
                                                 <TableHead className="text-lg ">Nr.</TableHead>
                                                 <TableHead className="text-lg md:text-xl">Emne</TableHead>
                                                 <TableHead className="text-lg md:text-xl">Status</TableHead>
-                                                <TableHead className="text-lg ">Sist oppdatert</TableHead>
+                                                <TableHead className="text-lg hidden md:flex">Sist oppdatert</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody className="text-lg">
                                             {tickets.length < 1 ? (
                                                 <TableRow>
                                                     <TableCell colSpan={4} className="p-4 text-center">
-                                                        Ingen tickets registrert på kunden.
+                                                        Ingen tickets registrert.
                                                     </TableCell>
                                                 </TableRow>
                                             ) : (
@@ -164,7 +164,7 @@ export default function DisplayCustomer() {
                                                         <TableCell className="font-medium">{ticket.ticketNo}</TableCell>
                                                         <TableCell>{ticket.subject}</TableCell>
                                                         <TableCell>{statusLabels[ticket.status]}</TableCell>
-                                                        <TableCell className="flex gap-1">
+                                                        <TableCell className="gap-1 hidden md:flex">
                                                             <p>
                                                                 {new Date(ticket.updatedLast).toLocaleString("no-NO", {
                                                                     day: "2-digit",
