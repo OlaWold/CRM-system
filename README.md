@@ -14,6 +14,10 @@ Dette prosjektet er utviklet for å gi en enkel oversikt over kunder og saker i 
 - oppdatere ticketstatus
 - vise tickets per kunde
 - filtrere og sortere saker
+- opprette kontakter
+- sette kontakter til et firma
+
+  Flere funksjoner kommer fortløpende.
 
 ## Teknologistack
 
