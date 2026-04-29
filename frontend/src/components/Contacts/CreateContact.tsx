@@ -1,43 +1,32 @@
 import { useEffect, useRef, useState } from "react";
-import { useForm, SubmitHandler, Controller } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { FieldDescription } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
 
-type Customer = {
+type CustomerOption = {
     id: number;
-    customerNo: number;
     companyName: string;
 };
 
 type FormFields = {
     companyName: string;
     customerId: number | null;
-    subject: string;
-    description: string;
-    contactName: string;
+    firstName: string;
+    lastName: string;
     email: string;
     phone: string;
-    status: string;
+    role: string;
 };
 
 type Props = {
     onSuccess?: () => void;
+    initialCustomer?: CustomerOption;
 };
 
-export function CreateTickets({ onSuccess }: Props) {
+export function CreateContact({ onSuccess, initialCustomer }: Props) {
     const {
         register,
-        control,
         watch,
         setValue,
         handleSubmit,
@@ -45,23 +34,25 @@ export function CreateTickets({ onSuccess }: Props) {
         formState: { errors, isSubmitting },
     } = useForm<FormFields>({
         defaultValues: {
-            companyName: "",
-            customerId: null,
-            subject: "",
-            description: "",
-            contactName: "",
+            companyName: initialCustomer?.companyName ?? "",
+            customerId: initialCustomer?.id ?? null,
+            firstName: "",
+            lastName: "",
             email: "",
             phone: "",
-            status: "OPEN",
+            role: "",
         },
     });
 
-    const [customers, setCustomers] = useState<Customer[]>([]);
+    const [customers, setCustomers] = useState<CustomerOption[]>([]);
     const customerSearch = watch("companyName");
     const customerId = watch("customerId");
-    const lastSelectedName = useRef<string | null>(null);
+    const lockedCustomer = !!initialCustomer;
+    const lastSelectedName = useRef<string | null>(initialCustomer?.companyName ?? null);
 
     useEffect(() => {
+        if (lockedCustomer) return;
+
         if (lastSelectedName.current !== null && customerSearch === lastSelectedName.current) {
             return;
         }
@@ -81,18 +72,16 @@ export function CreateTickets({ onSuccess }: Props) {
                 const response = await fetch(
                     `http://localhost:8080/api/v1/customers/search?q=${encodeURIComponent(customerSearch)}`
                 );
-                if (!response.ok) {
-                    throw new Error("Failed to fetch customers");
-                }
+                if (!response.ok) throw new Error("Failed to fetch customers");
                 const data = await response.json();
                 setCustomers(data);
-            } catch {
-                setError("root", { message: "Klarte ikke å søke etter kunder" });
+            } catch (error) {
+                console.error(error);
             }
         }, 300);
 
         return () => clearTimeout(timeout);
-    }, [customerSearch, customerId, setValue, setError]);
+    }, [customerSearch, customerId, lockedCustomer, setValue]);
 
     const onSubmit: SubmitHandler<FormFields> = async (data) => {
         if (!data.customerId) {
@@ -100,31 +89,35 @@ export function CreateTickets({ onSuccess }: Props) {
             return;
         }
         try {
-            const response = await fetch("http://localhost:8080/api/v1/tickets", {
+            const response = await fetch("http://localhost:8080/api/v1/contacts", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data),
+                body: JSON.stringify({
+                    customerId: data.customerId,
+                    firstName: data.firstName,
+                    lastName: data.lastName,
+                    email: data.email,
+                    phone: data.phone,
+                    role: data.role || null,
+                }),
             });
-
-            if (!response.ok) {
-                throw new Error("Failed to save ticket");
-            }
-
+            if (!response.ok) throw new Error("Failed to create contact");
             onSuccess?.();
         } catch {
-            setError("root", { message: "Feil med et av feltene" });
+            setError("root", { message: "Kunne ikke opprette kontakt" });
         }
     };
 
     return (
         <form className="flex flex-col gap-3 p-4" onSubmit={handleSubmit(onSubmit)}>
             <div className="relative">
-                <FieldDescription>Kundenavn eller kundenr.</FieldDescription>
+                <FieldDescription>Kunde</FieldDescription>
                 <Input
-                    {...register("companyName", { required: "Bedriftsnavn må fylles ut" })}
+                    {...register("companyName", { required: "Kunde må velges" })}
                     placeholder="Kundenavn eller kundenr."
+                    disabled={lockedCustomer}
                 />
-                {customers.length > 0 && (
+                {!lockedCustomer && customers.length > 0 && (
                     <div className="absolute left-0 top-full z-50 mt-1 w-full rounded-md border bg-white shadow-sm">
                         {customers.map((customer) => (
                             <button
@@ -147,42 +140,29 @@ export function CreateTickets({ onSuccess }: Props) {
             </div>
 
             <div>
-                <FieldDescription>Emne</FieldDescription>
+                <FieldDescription>Fornavn</FieldDescription>
                 <Input
-                    {...register("subject", { required: "Emne må fylles ut" })}
-                    placeholder="Emne"
+                    {...register("firstName", { required: "Fornavn må fylles ut" })}
+                    placeholder="Fornavn"
                 />
-                {errors.subject && <p className="mt-1 text-sm text-red-600">{errors.subject.message}</p>}
+                {errors.firstName && <p className="mt-1 text-sm text-red-600">{errors.firstName.message}</p>}
             </div>
 
             <div>
-                <FieldDescription>Beskrivelse</FieldDescription>
-                <Textarea
-                    {...register("description", { required: "Beskrivelse må fylles ut" })}
-                    placeholder="Beskrivelse"
+                <FieldDescription>Etternavn</FieldDescription>
+                <Input
+                    {...register("lastName", { required: "Etternavn må fylles ut" })}
+                    placeholder="Etternavn"
                 />
-                {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>}
+                {errors.lastName && <p className="mt-1 text-sm text-red-600">{errors.lastName.message}</p>}
             </div>
 
             <div>
-                <FieldDescription>Kontaktperson</FieldDescription>
+                <FieldDescription>Rolle / tittel</FieldDescription>
                 <Input
-                    {...register("contactName", { required: "Kontaktperson må fylles ut" })}
-                    placeholder="Kontaktperson"
+                    {...register("role")}
+                    placeholder="F.eks. Daglig leder"
                 />
-                {errors.contactName && <p className="mt-1 text-sm text-red-600">{errors.contactName.message}</p>}
-            </div>
-
-            <div>
-                <FieldDescription>E-post</FieldDescription>
-                <Input
-                    {...register("email", {
-                        required: "E-post må fylles ut",
-                        validate: (value) => (value.includes("@") ? true : "E-post må inneholde @"),
-                    })}
-                    placeholder="E-post"
-                />
-                {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
             </div>
 
             <div>
@@ -198,30 +178,19 @@ export function CreateTickets({ onSuccess }: Props) {
             </div>
 
             <div>
-                <FieldDescription>Status</FieldDescription>
-                <Controller
-                    name="status"
-                    control={control}
-                    render={({ field }) => (
-                        <Select value={field.value} onValueChange={field.onChange}>
-                            <SelectTrigger className="w-48">
-                                <SelectValue placeholder="Velg status" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectGroup>
-                                    <SelectItem value="OPEN">Åpen</SelectItem>
-                                    <SelectItem value="WAITING">Venter</SelectItem>
-                                    <SelectItem value="IN_PROGRESS">Pågår</SelectItem>
-                                    <SelectItem value="CLOSED">Lukket</SelectItem>
-                                </SelectGroup>
-                            </SelectContent>
-                        </Select>
-                    )}
+                <FieldDescription>E-post</FieldDescription>
+                <Input
+                    {...register("email", {
+                        required: "E-post må fylles ut",
+                        validate: (value) => (value.includes("@") ? true : "E-post må inneholde @"),
+                    })}
+                    placeholder="E-post"
                 />
+                {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
             </div>
 
             <Button disabled={isSubmitting} className="mt-2 w-fit" type="submit">
-                {isSubmitting ? "Oppretter..." : "Opprett ticket"}
+                {isSubmitting ? "Oppretter..." : "Opprett kontakt"}
             </Button>
             {errors.root && <p className="mt-1 text-sm text-red-600">{errors.root.message}</p>}
         </form>

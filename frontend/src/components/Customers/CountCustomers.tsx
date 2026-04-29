@@ -1,42 +1,34 @@
-import {useState} from "react";
-import {Button} from "@/components/ui/button";
-import {useNavigate} from "react-router-dom";
-
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 export default function CountCustomers() {
-
-    const [customers, setNumCustomers] = useState<number[]>([]);
-
+    const [count, setCount] = useState<number | null>(null);
     const navigate = useNavigate();
 
-    async function fetchCustomers() {
-        try {
-            const response = await fetch("http://localhost:8080/api/v1/customers/count");
-
-            if (!response.ok) {
-                throw Error("Could not fetch tickets from server");
+    useEffect(() => {
+        async function fetchCount() {
+            try {
+                const response = await fetch("http://localhost:8080/api/v1/customers/count");
+                if (!response.ok) {
+                    throw new Error("Could not fetch customer count");
+                }
+                const data = await response.json();
+                setCount(data);
+            } catch (error) {
+                console.error(error);
             }
-
-            const data = await response.json();
-            setNumCustomers(data);
-        } catch (error) {
-            console.error(error);
         }
-    } fetchCustomers();
+        fetchCount();
+    }, []);
 
     return (
-        <>
-            <div className="flex flex-col p-4 w-fit">
-
-                <div className="flex flex-col border bg-white rounded-4xl h-fit w-fit gap-4 px-10 py-4 shadow-md border-gray-200 text-lg items-center justify-center">
-                    <div className="flex flex-col">
-                        <p>Totalt antall</p>
-                        <p>kunder:</p>
-                    </div>
-                    <p className="text-xl">{customers}</p>
-                </div>
-                <Button className="w-fit mt-6 cursor-pointer" onClick={() => navigate("/customers")}>Gå til kunder</Button>
-            </div>
-        </>
-    )
+        <div className="rounded-md border bg-white p-4">
+            <p className="text-sm text-slate-600">Antall kunder</p>
+            <p className="mt-1 text-2xl font-semibold">{count ?? "—"}</p>
+            <Button variant="outline" size="sm" className="mt-3" onClick={() => navigate("/customers")}>
+                Gå til kunder
+            </Button>
+        </div>
+    );
 }

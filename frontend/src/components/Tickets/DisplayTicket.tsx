@@ -1,6 +1,6 @@
-import {useEffect, useState} from "react";
-import {useParams} from "react-router-dom";
-import {Button} from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import TicketNotes from "@/components/Tickets/AddNotes";
 
 type TicketStatus = "OPEN" | "IN_PROGRESS" | "WAITING" | "CLOSED";
@@ -26,49 +26,32 @@ const statusLabels: Record<TicketStatus, string> = {
     CLOSED: "Lukket",
 };
 
-const statusClasses: Record<TicketStatus, string> = {
+const statusBadge: Record<TicketStatus, string> = {
     OPEN: "bg-green-100 text-green-700",
-    IN_PROGRESS: "bg-yellow-100 text-yellow-700",
-    WAITING: "bg-orange-100 text-orange-700",
-    CLOSED: "bg-gray-200 text-gray-700",
-};
-
-const statusTextClasses: Record<TicketStatus, string> = {
-    OPEN: "text-green-700",
-    IN_PROGRESS: "text-yellow-700",
-    WAITING: "text-orange-700",
-    CLOSED: "text-gray-700",
+    IN_PROGRESS: "bg-yellow-100 text-yellow-800",
+    WAITING: "bg-orange-100 text-orange-800",
+    CLOSED: "bg-slate-200 text-slate-700",
 };
 
 export default function DisplayTickets() {
-
     const { id } = useParams();
-    const [ticket, setTicket] = useState<Ticket | null>(null)
-
-    // Fetcher dataen fra databasen slik at den blir vist i bildet når mnan går inn på tickets.
+    const [ticket, setTicket] = useState<Ticket | null>(null);
 
     useEffect(() => {
-        const loadTicket= async () => {
+        const loadTicket = async () => {
             try {
                 const response = await fetch(`http://localhost:8080/api/v1/tickets/${id}`);
-                console.log(response);
-                if (!response.ok)
-                    throw new Error("Failed to fetch ticket");
-
+                if (!response.ok) throw new Error("Failed to fetch ticket");
                 const data = await response.json();
                 setTicket(data);
-                console.log(data);
-
             } catch (error) {
-                console.log(error);
+                console.error(error);
             }
         };
         if (id) {
             loadTicket();
         }
     }, [id]);
-
-    // Gjør at vi kan endre status inne på ticketen ved hjelp av knappene i UI.
 
     const updateTicketStatus = async (status: TicketStatus) => {
         try {
@@ -77,117 +60,92 @@ export default function DisplayTickets() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ status }),
             });
-
             if (!response.ok) {
                 throw new Error("Failed to update ticket");
             }
-
-            const updatedTicket = await response.json();
-            setTicket(updatedTicket);
+            setTicket(await response.json());
         } catch (error) {
             console.error(error);
         }
     };
 
+    if (!ticket) {
+        return null;
+    }
+
     return (
-        <div>
-            <h1 className="justify-start items-start text-2xl font-medium">Ticketoversikt:</h1>
-            <div className="flex flex-col">
-                {!ticket ? (
-                    <p></p> // Ønsker ikke å gi beskjed til brukeren dersom det laster. Da dette ga dårlig opplevelse av systemet.
-                ) : (
-                    <div className="rounded-4xl mt-8 max-w-5xl w-full flex flex-col border h-fit shadow-md bg-white border-gray-200">
-                        <div className="flex flex-col border-b p-6">
-                            <div className="flex justify-between w-full items-start">
-                                <h1 className="text-xl">Ticket #{ticket.ticketNo}</h1>
+        <div className="mx-auto w-full max-w-5xl space-y-4">
+            <header>
+                <h1 className="text-xl font-semibold">Ticketoversikt</h1>
+            </header>
 
-                                {/* Bruker statusClasses slik at vi kan gi farge og norsk label som er dynamisk etter hvilken statusen. */}
-                                <h1 className={`text-xl rounded-4xl px-4 py-2 ${statusClasses[ticket.status]}`}>{statusLabels[ticket.status]}</h1>
-                            </div>
-                            <div>
-                                <h1 className="text-2xl">{ticket.subject}</h1>
-                                <h1 className="text-xl text-gray-600 mt-2">{ticket.companyName}</h1>
-                            </div>
-                        </div>
-                        {/* Boksen for beskrivelse */}
-                        <div className="grid grid-cols-1 mt-10 md:mt-1 p-4 gap-4 mb-10 lg:grid-cols-2">
-                            <div className="border rounded-4xl h-[20vh] shadow-md border-gray-200 text-xl">
-                                <div className="border-b w-full place-items-start text-2xl justify-items-start p-4">
-                                    <h1 className=" px-4 text-xl">Beskrivelse</h1>
-                                </div>
-                                <div className="mt-6 px-8 place-items-start text-left text-lg justify-items-start">
-                                    <p>{ticket.description}</p>
-                                </div>
-                            </div>
-
-                            {/* Boken for Kontaktinfo */}
-                            <div className="border rounded-4xl h-[20vh] shadow-md border-gray-200 place-items-start text-xl justify-center">
-                                <div className="border-b w-full place-items-start text-xl justify-center p-4">
-                                    <h1 className="text-xl px-4">Kontaktinfo</h1>
-                                </div>
-                                <div className="mt-6 px-8 text-lg">
-                                    <div className="flex flex-col md:flex-row md:gap-6">
-                                        <h1>Firmanavn:</h1>
-                                        <p>{ticket.companyName}</p>
-                                    </div>
-                                    <div className="flex flex-col md:flex-row md:gap-6 mt-2">
-                                        <h1 className="">Navn:</h1>
-                                        <p>{ticket.contactName}</p>
-                                    </div>
-                                    <div className="flex flex-col md:flex-row md:gap-6 mt-2">
-                                        <h1>Telefon:</h1>
-                                        <p> {ticket.phone}</p>
-                                    </div>
-                                    <div className="flex flex-col md:flex-row md:gap-6 mt-2">
-                                        <h1>E-post:</h1>
-                                        <p>{ticket.email}</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Boksene for opprettet og status */}
-                            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                                <div className="rounded-4xl border shadow-md border-gray-200 p-6 place-items-start text-lg place-content-center">
-                                        <h1 className="text-xl">Opprettet:</h1>
-                                        <p className="mt-2">{new Date(ticket.created).toLocaleString("no-NO", {
-                                            day: "numeric",
-                                            month: "long",
-                                            year: "numeric",
-                                            })
-                                        }</p>
-                                    <p className="mt-2">Kl. {new Date(ticket.created).toLocaleString("no-NO", {
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                    })
-                                    }</p>
-                                </div>
-                                <div className="rounded-4xl border shadow-md border-gray-200 p-6 place-items-start text-xl ">
-                                    <h1 className="text-xl">Status:</h1>
-                                    <p className={`mt-2 ${statusTextClasses[ticket.status]}`}>{statusLabels[ticket.status]}</p>
-                                </div>
-
-                            </div>
-
-                            {/* Boksen for å endre status */}
-                            <div className="rounded-4xl border shadow-md border-gray-200 p-6 text-xl">
-                                <h1>Endre status:</h1>
-                                <div className="grid grid-cols-2 md:flex gap-3 place-content-center md:justify-start mt-4">
-                                    <Button onClick={() => updateTicketStatus("OPEN")}>Åpen</Button>
-                                    <Button onClick={() => updateTicketStatus("WAITING") }>Venter</Button>
-                                    <Button onClick={() => updateTicketStatus("IN_PROGRESS")}>Pågår</Button>
-                                    <Button onClick={() => updateTicketStatus("CLOSED")}>Lukket</Button>
-                                </div>
-                            </div>
-                            </div>
-
-                        </div>
-                )}
-                {/* Vise notater og legg til knappen for å lagre */}
-                    <div className="bg-white p-4 max-w-5xl w-full shadow-md rounded-4xl border-gray-200 mt-6">
-                            <TicketNotes/>
-
+            <div className="rounded-md border bg-white">
+                <div className="flex flex-col gap-2 border-b px-4 py-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="min-w-0">
+                        <p className="text-sm text-slate-600">Ticket #{ticket.ticketNo}</p>
+                        <h2 className="break-words text-base font-semibold">{ticket.subject}</h2>
+                        <p className="break-words text-sm text-slate-600">{ticket.companyName}</p>
                     </div>
+                    <span
+                        className={`self-start whitespace-nowrap rounded-md px-2 py-1 text-xs font-medium ${statusBadge[ticket.status]}`}
+                    >
+                        {statusLabels[ticket.status]}
+                    </span>
+                </div>
 
+                <div className="grid grid-cols-1 gap-3 p-3 sm:gap-4 sm:p-4 md:grid-cols-2">
+                    <section className="rounded-md border">
+                        <h3 className="border-b px-3 py-2 text-sm font-medium">Beskrivelse</h3>
+                        <p className="whitespace-pre-wrap break-words px-3 py-3 text-sm">{ticket.description}</p>
+                    </section>
+
+                    <section className="rounded-md border">
+                        <h3 className="border-b px-3 py-2 text-sm font-medium">Kontaktinfo</h3>
+                        <dl className="grid grid-cols-[max-content_minmax(0,1fr)] gap-x-4 gap-y-1 px-3 py-3 text-sm">
+                            <dt className="text-slate-600">Firmanavn</dt>
+                            <dd className="min-w-0 break-words">{ticket.companyName}</dd>
+                            <dt className="text-slate-600">Navn</dt>
+                            <dd className="min-w-0 break-words">{ticket.contactName}</dd>
+                            <dt className="text-slate-600">Telefon</dt>
+                            <dd className="min-w-0 break-words">{ticket.phone}</dd>
+                            <dt className="text-slate-600">E-post</dt>
+                            <dd className="min-w-0 break-words">{ticket.email}</dd>
+                        </dl>
+                    </section>
+
+                    <section className="rounded-md border">
+                        <h3 className="border-b px-3 py-2 text-sm font-medium">Opprettet</h3>
+                        <p className="px-3 py-3 text-sm">
+                            {new Date(ticket.created).toLocaleString("no-NO", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                            })}
+                        </p>
+                    </section>
+
+                    <section className="rounded-md border">
+                        <h3 className="border-b px-3 py-2 text-sm font-medium">Endre status</h3>
+                        <div className="grid grid-cols-2 gap-2 px-3 py-3 sm:flex sm:flex-wrap">
+                            {(Object.keys(statusLabels) as TicketStatus[]).map((status) => (
+                                <Button
+                                    key={status}
+                                    size="sm"
+                                    variant={ticket.status === status ? "default" : "outline"}
+                                    onClick={() => updateTicketStatus(status)}
+                                >
+                                    {statusLabels[status]}
+                                </Button>
+                            ))}
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <div className="rounded-md border bg-white">
+                <TicketNotes />
             </div>
         </div>
     );

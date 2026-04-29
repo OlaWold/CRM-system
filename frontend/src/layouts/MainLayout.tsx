@@ -5,24 +5,24 @@ import "../index.css";
 import Sidebar from "../components/Sidebar";
 
 export default function MainLayout() {
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
     return (
         <div className="relative h-screen overflow-hidden bg-background">
             <aside
-                className={`fixed inset-y-0 left-0 z-40 w-64 border-r shadow-lg bg-white transition-transform duration-300 ease-in-out ${
+                className={`fixed inset-y-0 left-0 z-40 w-56 border-r bg-white transition-transform duration-200 ease-in-out ${
                     isSidebarOpen ? "translate-x-0" : "-translate-x-full"
                 }`}
             >
-                <div className="flex items-center justify-between border-b px-4 py-4">
-                    <span className="text-lg font-semibold">CRM-System</span>
+                <div className="flex items-center justify-between border-b px-4 py-3">
+                    <span className="text-base font-semibold">CRM-System</span>
                     <button
                         type="button"
                         onClick={() => setIsSidebarOpen(false)}
-                        className="rounded-md p-2 transition hover:bg-slate-100"
+                        className="rounded-md p-1.5 transition hover:bg-slate-100"
                         aria-label="Lukk meny"
                     >
-                        <X size={20} />
+                        <X size={18} />
                     </button>
                 </div>
 
@@ -39,27 +39,25 @@ export default function MainLayout() {
             )}
 
             <div
-                className={`flex h-full flex-col transition-[padding-left] duration-300 ease-in-out ${
-                    isSidebarOpen ? "md:pl-64" : "md:pl-0"
+                className={`flex h-full flex-col transition-[padding-left] duration-200 ease-in-out ${
+                    isSidebarOpen ? "md:pl-56" : "md:pl-0"
                 }`}
             >
-                <header className="flex items-center gap-3 border-b bg-white px-4 py-3">
+                <header className="flex items-center gap-3 border-b bg-white px-4 py-2.5">
                     {!isSidebarOpen && (
                         <button
                             type="button"
                             onClick={() => setIsSidebarOpen(true)}
-                            className="rounded-md p-2 transition hover:bg-slate-100"
+                            className="rounded-md p-1.5 transition hover:bg-slate-100"
                             aria-label="Åpne meny"
-                            aria-expanded={false}
                         >
-                            <Menu size={22} />
+                            <Menu size={20} />
                         </button>
                     )}
-
-                    <span className="text-lg font-semibold">CRM-System</span>
+                    <span className="text-base font-semibold">CRM-System</span>
                 </header>
 
-                <main className="flex-1 overflow-auto p-6">
+                <main className="flex-1 overflow-auto p-4 md:p-6">
                     <Outlet />
                 </main>
             </div>

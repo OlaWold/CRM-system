@@ -1,88 +1,91 @@
-import {Button} from "@/components/ui/button";
-import {Textarea} from "@/components/ui/textarea";
-import {useEffect, useState} from "react";
-import {useParams} from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 
 type Note = {
     id: number;
     text: string;
-    createdAt: Date;
-}
+    createdAt: string;
+};
 
 export default function TicketNotes() {
     const [notes, setNotes] = useState<Note[]>([]);
     const [text, setText] = useState("");
     const { id } = useParams();
 
-    // Fetch på Notes fra databasen.
-    async function displayNotes() {
+    const displayNotes = useCallback(async () => {
         try {
             const response = await fetch(`http://localhost:8080/api/v1/tickets/${id}/notes`);
-            if (!response.ok) throw new Error("failed to fetch notes");
+            if (!response.ok) throw new Error("Failed to fetch notes");
             const data = await response.json();
             setNotes(data);
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
-    }
+    }, [id]);
 
-    async function handleSubmit() {
-        try {
-            // Sender POST request med opprettet ticket.
-            const response = await fetch(`http://localhost:8080/api/v1/tickets/${id}/notes`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ text }),
-            });
-
-            if (!response.ok) {
-                throw new Error("failed to create note");
-            }
-
-            setText("");
-            await displayNotes();
-        } catch (error) {
-            console.log(error);
-        }
-    }
-    // Refresh komponenten når det blir lagt til notat slik at den vises med engang.
     useEffect(() => {
         if (id) {
             displayNotes();
         }
-    }, [id]);
+    }, [id, displayNotes]);
+
+    async function handleSubmit() {
+        const trimmed = text.trim();
+        if (!trimmed) return;
+
+        try {
+            const response = await fetch(`http://localhost:8080/api/v1/tickets/${id}/notes`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ text: trimmed }),
+            });
+            if (!response.ok) {
+                throw new Error("Failed to create note");
+            }
+            setText("");
+            await displayNotes();
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     return (
-        <>
-            <div className="max-w-5xl">
-                <h1 className="text-xl p-2">Ticket notater:</h1>
+        <div className="space-y-3 p-3 sm:p-4">
+            <h2 className="text-base font-semibold">Notater</h2>
 
-                <div className="flex flex-col gap-4 p-2">
+            {notes.length === 0 ? (
+                <p className="text-sm text-slate-500">Ingen notater ennå.</p>
+            ) : (
+                <ul className="space-y-2">
                     {notes.map((note) => (
-                        <div
-                            key={note.id}
-                            className="flex flex-col border shadow-md shadow-gray-200 rounded-4xl py-6 px-6"
-                        >
-                            <div className="flex">
-                                <p>{note.text}</p>
-                            </div>
-
-                            <div className="flex mt-6">
-                                <p>{new Date(note.createdAt).toLocaleString("no-NO", {
+                        <li key={note.id} className="rounded-md border px-3 py-2 text-sm">
+                            <p className="whitespace-pre-wrap break-words">{note.text}</p>
+                            <p className="mt-2 text-xs text-slate-500">
+                                {new Date(note.createdAt).toLocaleString("no-NO", {
                                     day: "2-digit",
                                     month: "long",
                                     year: "numeric",
                                     hour: "2-digit",
-                                    minute: "2-digit"})
-                                }</p>
-                            </div>
-                        </div>
+                                    minute: "2-digit",
+                                })}
+                            </p>
+                        </li>
                     ))}
-                </div>
-                <Textarea className="mt-4" value={text} onChange={(e) => setText(e.target.value)} />
-                <Button className="mt-4" onClick={handleSubmit}>Legg til notat</Button>
-            </div>
+                </ul>
+            )}
 
-        </>
+            <div className="space-y-2">
+                <Textarea
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                    placeholder="Skriv et notat..."
+                />
+                <Button onClick={handleSubmit} disabled={!text.trim()}>
+                    Legg til notat
+                </Button>
+            </div>
+        </div>
     );
 }

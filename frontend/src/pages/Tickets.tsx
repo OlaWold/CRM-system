@@ -1,24 +1,13 @@
-import {Button} from "@/components/ui/button";
-import {CreateTickets} from "@/components/Tickets/CreateTicket";
-import {useState} from "react";
-import {GetTickets} from "@/components/Tickets/GetTickets";
+import { GetTickets } from "@/components/Tickets/GetTickets";
 
 export default function Tickets() {
-
-
     return (
-        <>
-            <div className="">
-                <div className="mb-6">
-                    <h1 className="text-2xl font-bold">Ticketliste</h1>
-                    <p>Oversikt over Tickets:</p>
-                </div>
-
-            </div>
-            <div className="">
-                <GetTickets />
-            </div>
-
-        </>
-    )
+        <div className="space-y-4">
+            <header>
+                <h1 className="text-xl font-semibold">Ticketliste</h1>
+                <p className="text-sm text-slate-600">Oversikt over alle tickets.</p>
+            </header>
+            <GetTickets />
+        </div>
+    );
 }

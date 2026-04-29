@@ -13,6 +13,7 @@ interface SidebarProps {
 const navItems: NavItem[] = [
     { label: "Dashboard", path: "/" },
     { label: "Kunder", path: "/customers" },
+    { label: "Kontakter", path: "/contacts" },
     { label: "Tickets", path: "/tickets" },
     { label: "Aktiviteter", path: "/activities" },
     { label: "Innstillinger", path: "/settings" },
@@ -27,18 +28,18 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
     };
 
     return (
-        <nav className="h-full px-3 py-4 text-xl">
-            <ul className="flex flex-col gap-1">
+        <nav className="h-full px-2 py-3 text-sm">
+            <ul className="flex flex-col gap-0.5">
                 {navItems.map((item) => (
                     <li key={item.path}>
                         <Link
                             to={item.path}
                             onClick={onNavigate}
                             aria-current={isActive(item.path) ? "page" : undefined}
-                            className={`block rounded-md px-4 py-2 text-center transition ${
+                            className={`block rounded-md px-3 py-2 transition ${
                                 isActive(item.path)
-                                    ? "bg-slate-100 text-gray-500"
-                                    : "hover:bg-slate-50 hover:text-grey-200"
+                                    ? "bg-slate-100 font-medium text-slate-900"
+                                    : "text-slate-700 hover:bg-slate-50"
                             }`}
                         >
                             {item.label}
