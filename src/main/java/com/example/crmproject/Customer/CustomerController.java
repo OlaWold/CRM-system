@@ -1,9 +1,10 @@
 package com.example.crmproject.Customer;
 
-import com.example.crmproject.Tickets.Tickets;
+import com.example.crmproject.Ai.AiService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/customers")
@@ -12,10 +13,12 @@ public class CustomerController {
 
     private final CustomerService service;
     private final CustomerRepository repo;
+    private final AiService aiService;
 
-    public CustomerController(CustomerService service, CustomerRepository repo) {
+    public CustomerController(CustomerService service, CustomerRepository repo, AiService aiService) {
         this.service = service;
         this.repo = repo;
+        this.aiService = aiService;
     }
 
     @GetMapping("/count")
@@ -52,5 +55,10 @@ public class CustomerController {
     @PutMapping("/{id}")
     public Customer update(@PathVariable Long id, @RequestBody Customer customer) {
         return service.update(id, customer);
+    }
+
+    @PostMapping("/{id}/ai-summary")
+    public Map<String, String> aiSummary(@PathVariable Long id) {
+        return Map.of("summary", aiService.summarizeCustomer(id));
     }
 }

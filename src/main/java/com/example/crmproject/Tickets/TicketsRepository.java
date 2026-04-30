@@ -21,6 +21,10 @@ public interface TicketsRepository extends JpaRepository<Tickets, Long> {
 
     long countByStatusAndUpdatedLastAfter(Tickets.TicketStatus ticketStatus, Instant thirtyDaysAgo);
 
+    long countByCreatedBetween(Instant from, Instant to);
 
+    long countByStatusAndUpdatedLastBetween(Tickets.TicketStatus status, Instant from, Instant to);
+
+    List<Tickets> findByCustomerIsNullOrderByCreatedDesc();
 
 }

@@ -20,11 +20,11 @@ export default function ActivityDetail({ activity, onStatusChange, onDelete }: P
     return (
         <div className="space-y-4 p-4">
             <div className="space-y-1">
-                <p className="text-xs uppercase tracking-wide text-slate-500">
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">
                     {activityTypeLabels[activity.type]} · {activityStatusLabels[activity.status]}
                 </p>
                 <h2 className="text-base font-semibold break-words">{activity.title}</h2>
-                <p className="text-sm text-slate-600">
+                <p className="text-sm text-muted-foreground">
                     {start.toLocaleString("no-NO", {
                         day: "numeric",
                         month: "long",
@@ -42,12 +42,12 @@ export default function ActivityDetail({ activity, onStatusChange, onDelete }: P
             )}
 
             <dl className="grid grid-cols-[max-content_minmax(0,1fr)] gap-x-4 gap-y-1 text-sm">
-                <dt className="text-slate-600">Kunde</dt>
+                <dt className="text-muted-foreground">Kunde</dt>
                 <dd>
                     {activity.customer ? (
                         <Link
                             to={`/customers/${activity.customer.id}`}
-                            className="text-slate-900 underline-offset-2 hover:underline"
+                            className="text-foreground underline-offset-2 hover:underline"
                         >
                             {activity.customer.companyName}
                         </Link>
@@ -57,7 +57,7 @@ export default function ActivityDetail({ activity, onStatusChange, onDelete }: P
                 </dd>
                 {activity.contact && (
                     <>
-                        <dt className="text-slate-600">Kontakt</dt>
+                        <dt className="text-muted-foreground">Kontakt</dt>
                         <dd>{activity.contact.firstName} {activity.contact.lastName}</dd>
                     </>
                 )}

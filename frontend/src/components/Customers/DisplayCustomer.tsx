@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { CreateContact } from "@/components/Contacts/CreateContact";
 import { AssignProduct } from "@/components/Products/AssignProduct";
 import { CreateActivity } from "@/components/Activities/CreateActivity";
+import AiSummary from "@/components/Customers/AiSummary";
 import { Contact } from "@/types/Contacts";
 import { CustomerProduct } from "@/types/Products";
 import {
@@ -111,7 +112,7 @@ export default function DisplayCustomer() {
     }, [fetchData]);
 
     if (!customer) {
-        return <div className="text-sm text-slate-600">Laster...</div>;
+        return <div className="text-sm text-muted-foreground">Laster...</div>;
     }
 
     return (
@@ -120,23 +121,27 @@ export default function DisplayCustomer() {
                 <h1 className="text-xl font-semibold">Kundeoversikt</h1>
             </header>
 
-            <div className="rounded-md border bg-white">
+            <div className="rounded-md border bg-card">
                 <div className="border-b px-4 py-3">
                     <h2 className="text-base font-semibold">{customer.companyName}</h2>
-                    <p className="text-sm text-slate-600">Kundenr. {customer.customerNo}</p>
+                    <p className="text-sm text-muted-foreground">Kundenr. {customer.customerNo}</p>
+                </div>
+
+                <div className="px-4 pt-4">
+                    <AiSummary customerId={customer.id} />
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2">
                     <section className="rounded-md border">
                         <h3 className="border-b px-3 py-2 text-sm font-medium">Kundeinformasjon</h3>
                         <dl className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-1 px-3 py-3 text-sm">
-                            <dt className="text-slate-600">Org.nummer</dt>
+                            <dt className="text-muted-foreground">Org.nummer</dt>
                             <dd>{customer.orgNumber}</dd>
-                            <dt className="text-slate-600">Hovedkontakt</dt>
+                            <dt className="text-muted-foreground">Hovedkontakt</dt>
                             <dd>{customer.firstName} {customer.lastName}</dd>
-                            <dt className="text-slate-600">Telefon</dt>
+                            <dt className="text-muted-foreground">Telefon</dt>
                             <dd>{customer.phone}</dd>
-                            <dt className="text-slate-600">E-post</dt>
+                            <dt className="text-muted-foreground">E-post</dt>
                             <dd>{customer.email}</dd>
                         </dl>
                     </section>
@@ -149,7 +154,7 @@ export default function DisplayCustomer() {
                             </Button>
                         </div>
                         {products.length === 0 ? (
-                            <p className="px-3 py-3 text-sm text-slate-500">Ingen produkter registrert.</p>
+                            <p className="px-3 py-3 text-sm text-muted-foreground">Ingen produkter registrert.</p>
                         ) : (
                             <ul className="divide-y">
                                 {products.map((link) => (
@@ -159,12 +164,12 @@ export default function DisplayCustomer() {
                                     >
                                         <div className="min-w-0">
                                             <p className="font-medium">{link.product.name}</p>
-                                            <p className="text-xs text-slate-500">
+                                            <p className="text-xs text-muted-foreground">
                                                 Lagt til {new Date(link.addedAt).toLocaleDateString("no-NO")}
                                             </p>
                                         </div>
                                         <div className="flex items-center gap-3">
-                                            <span className="whitespace-nowrap text-slate-700">
+                                            <span className="whitespace-nowrap text-foreground">
                                                 {formatPrice(link.product.price)}
                                             </span>
                                             <Button
@@ -203,7 +208,7 @@ export default function DisplayCustomer() {
                             <TableBody>
                                 {contacts.length === 0 ? (
                                     <TableRow>
-                                        <TableCell colSpan={5} className="py-4 text-center text-slate-500">
+                                        <TableCell colSpan={5} className="py-4 text-center text-muted-foreground">
                                             Ingen kontakter registrert.
                                         </TableCell>
                                     </TableRow>
@@ -236,7 +241,7 @@ export default function DisplayCustomer() {
                             </Button>
                         </div>
                         {activities.length === 0 ? (
-                            <p className="px-3 py-3 text-sm text-slate-500">Ingen avtaler registrert.</p>
+                            <p className="px-3 py-3 text-sm text-muted-foreground">Ingen avtaler registrert.</p>
                         ) : (
                             <ul className="divide-y">
                                 {activities.map((a) => (
@@ -244,7 +249,7 @@ export default function DisplayCustomer() {
                                         key={a.id}
                                         className="flex flex-col gap-1 px-3 py-2 text-sm sm:flex-row sm:items-center sm:gap-4"
                                     >
-                                        <span className="w-40 shrink-0 text-slate-600">
+                                        <span className="w-40 shrink-0 text-muted-foreground">
                                             {new Date(a.scheduledAt).toLocaleString("no-NO", {
                                                 day: "2-digit",
                                                 month: "short",
@@ -259,11 +264,11 @@ export default function DisplayCustomer() {
                                             {activityTypeLabels[a.type]}
                                         </span>
                                         <span
-                                            className={`min-w-0 flex-1 font-medium ${a.status !== "PLANNED" ? "text-slate-500 line-through" : ""}`}
+                                            className={`min-w-0 flex-1 font-medium ${a.status !== "PLANNED" ? "text-muted-foreground line-through" : ""}`}
                                         >
                                             {a.title}
                                         </span>
-                                        <span className="text-xs text-slate-500">
+                                        <span className="text-xs text-muted-foreground">
                                             {activityStatusLabels[a.status]}
                                         </span>
                                     </li>
@@ -288,7 +293,7 @@ export default function DisplayCustomer() {
                             <TableBody>
                                 {tickets.length === 0 ? (
                                     <TableRow>
-                                        <TableCell colSpan={4} className="py-4 text-center text-slate-500">
+                                        <TableCell colSpan={4} className="py-4 text-center text-muted-foreground">
                                             Ingen tickets registrert.
                                         </TableCell>
                                     </TableRow>
@@ -322,13 +327,13 @@ export default function DisplayCustomer() {
 
             {showContactForm && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-                    <div className="w-full max-w-xl rounded-md border bg-white">
+                    <div className="w-full max-w-xl rounded-md border bg-card">
                         <div className="flex items-center justify-between border-b px-4 py-3">
                             <h2 className="text-base font-semibold">Ny kontakt</h2>
                             <button
                                 type="button"
                                 onClick={() => setShowContactForm(false)}
-                                className="rounded-md p-1.5 hover:bg-slate-100"
+                                className="rounded-md p-1.5 hover:bg-accent"
                                 aria-label="Lukk"
                             >
                                 <X size={18} />
@@ -347,13 +352,13 @@ export default function DisplayCustomer() {
 
             {showProductForm && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-                    <div className="w-full max-w-xl rounded-md border bg-white">
+                    <div className="w-full max-w-xl rounded-md border bg-card">
                         <div className="flex items-center justify-between border-b px-4 py-3">
                             <h2 className="text-base font-semibold">Legg til produkt</h2>
                             <button
                                 type="button"
                                 onClick={() => setShowProductForm(false)}
-                                className="rounded-md p-1.5 hover:bg-slate-100"
+                                className="rounded-md p-1.5 hover:bg-accent"
                                 aria-label="Lukk"
                             >
                                 <X size={18} />
@@ -373,13 +378,13 @@ export default function DisplayCustomer() {
 
             {showActivityForm && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-                    <div className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-md border bg-white">
+                    <div className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-md border bg-card">
                         <div className="flex items-center justify-between border-b px-4 py-3">
                             <h2 className="text-base font-semibold">Ny avtale</h2>
                             <button
                                 type="button"
                                 onClick={() => setShowActivityForm(false)}
-                                className="rounded-md p-1.5 hover:bg-slate-100"
+                                className="rounded-md p-1.5 hover:bg-accent"
                                 aria-label="Lukk"
                             >
                                 <X size={18} />

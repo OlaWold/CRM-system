@@ -59,7 +59,7 @@ export default function MonthCalendar({
     const monthLabel = monthAnchor.toLocaleString("no-NO", { month: "long", year: "numeric" });
 
     return (
-        <div className="rounded-md border bg-white">
+        <div className="rounded-md border bg-card">
             <div className="flex items-center justify-between border-b px-3 py-2">
                 <h2 className="text-base font-semibold capitalize">{monthLabel}</h2>
                 <div className="flex items-center gap-1">
@@ -75,7 +75,7 @@ export default function MonthCalendar({
                 </div>
             </div>
 
-            <div className="grid grid-cols-7 border-b text-xs font-medium text-slate-600">
+            <div className="grid grid-cols-7 border-b text-xs font-medium text-muted-foreground">
                 {WEEKDAYS.map((d) => (
                     <div key={d} className="px-2 py-1.5 text-center">
                         {d}
@@ -94,15 +94,15 @@ export default function MonthCalendar({
                             key={idx}
                             type="button"
                             onClick={() => onSelectDate(day)}
-                            className={`flex min-h-24 flex-col gap-1 border-b border-r p-1.5 text-left text-xs transition hover:bg-slate-50 ${
+                            className={`flex min-h-24 flex-col gap-1 border-b border-r p-1.5 text-left text-xs transition hover:bg-accent ${
                                 idx % 7 === 6 ? "border-r-0" : ""
                             } ${idx >= 35 ? "border-b-0" : ""} ${
-                                inMonth ? "bg-white" : "bg-slate-50/60 text-slate-400"
+                                inMonth ? "bg-card" : "bg-muted/40 text-muted-foreground/60"
                             }`}
                         >
                             <span
                                 className={`inline-flex h-6 w-6 items-center justify-center rounded-full text-xs ${
-                                    isToday ? "bg-slate-900 text-white" : ""
+                                    isToday ? "bg-primary text-primary-foreground" : ""
                                 }`}
                             >
                                 {day.getDate()}
@@ -136,7 +136,7 @@ export default function MonthCalendar({
                                     </span>
                                 ))}
                                 {dayActivities.length > 3 && (
-                                    <span className="text-[11px] text-slate-500">
+                                    <span className="text-[11px] text-muted-foreground">
                                         +{dayActivities.length - 3} til
                                     </span>
                                 )}

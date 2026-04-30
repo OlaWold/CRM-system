@@ -56,13 +56,13 @@ export default function TicketNotes() {
             <h2 className="text-base font-semibold">Notater</h2>
 
             {notes.length === 0 ? (
-                <p className="text-sm text-slate-500">Ingen notater ennå.</p>
+                <p className="text-sm text-muted-foreground">Ingen notater ennå.</p>
             ) : (
                 <ul className="space-y-2">
                     {notes.map((note) => (
                         <li key={note.id} className="rounded-md border px-3 py-2 text-sm">
                             <p className="whitespace-pre-wrap break-words">{note.text}</p>
-                            <p className="mt-2 text-xs text-slate-500">
+                            <p className="mt-2 text-xs text-muted-foreground">
                                 {new Date(note.createdAt).toLocaleString("no-NO", {
                                     day: "2-digit",
                                     month: "long",

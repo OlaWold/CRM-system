@@ -7,6 +7,7 @@ import Contacts from "./pages/Contacts";
 import Activities from "./pages/Activities";
 import Settings from "./pages/Settings";
 import Tickets from "./pages/Tickets";
+import Incoming from "./pages/Incoming";
 import Products from "./pages/Products";
 import DisplayTickets from "@/components/Tickets/DisplayTicket";
 import DisplayCustomer from "@/components/Customers/DisplayCustomer";
@@ -24,6 +25,7 @@ function App() {
                     <Route path="contacts/:id" element={<DisplayContact />} />
                     <Route path="tickets" element={<Tickets />} />
                     <Route path="tickets/:id" element={<DisplayTickets />} />
+                    <Route path="incoming" element={<Incoming />} />
                     <Route path="products" element={<Products />} />
                     <Route path="activities" element={<Activities />} />
                     <Route path="settings" element={<Settings />} />

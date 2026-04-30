@@ -21,6 +21,8 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     boolean existsByCompanyNameIgnoreCase(String companyName);
 
+    Optional<Customer> findByEmailIgnoreCase(String email);
+
     @Query("select coalesce(max(c.customerNo), 0) from Customer c")
     long findMaxCustomerNo();
 

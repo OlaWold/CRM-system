@@ -5,7 +5,7 @@ export default function Customers() {
         <div className="space-y-4">
             <header>
                 <h1 className="text-xl font-semibold">Kundeliste</h1>
-                <p className="text-sm text-slate-600">Oversikt over alle registrerte kunder.</p>
+                <p className="text-sm text-muted-foreground">Oversikt over alle registrerte kunder.</p>
             </header>
             <CustomerTable />
         </div>

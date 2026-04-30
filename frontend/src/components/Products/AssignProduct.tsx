@@ -56,7 +56,7 @@ export function AssignProduct({ customerId, excludeProductIds, onSuccess }: Prop
     return (
         <div className="space-y-3 p-4">
             {available.length === 0 ? (
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-muted-foreground">
                     Ingen tilgjengelige produkter. Opprett produkter i katalogen først.
                 </p>
             ) : (
@@ -66,17 +66,17 @@ export function AssignProduct({ customerId, excludeProductIds, onSuccess }: Prop
                             <button
                                 type="button"
                                 onClick={() => setSelectedId(product.id)}
-                                className={`flex w-full items-center justify-between gap-4 px-3 py-2 text-left text-sm hover:bg-slate-50 ${
-                                    selectedId === product.id ? "bg-slate-100" : ""
+                                className={`flex w-full items-center justify-between gap-4 px-3 py-2 text-left text-sm hover:bg-accent ${
+                                    selectedId === product.id ? "bg-accent" : ""
                                 }`}
                             >
                                 <div className="min-w-0">
                                     <p className="font-medium">{product.name}</p>
                                     {product.description && (
-                                        <p className="truncate text-xs text-slate-500">{product.description}</p>
+                                        <p className="truncate text-xs text-muted-foreground">{product.description}</p>
                                     )}
                                 </div>
-                                <span className="whitespace-nowrap text-slate-700">{formatPrice(product.price)}</span>
+                                <span className="whitespace-nowrap text-foreground">{formatPrice(product.price)}</span>
                             </button>
                         </li>
                     ))}

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import TicketNotes from "@/components/Tickets/AddNotes";
+import TicketAi from "@/components/Tickets/TicketAi";
 
 type TicketStatus = "OPEN" | "IN_PROGRESS" | "WAITING" | "CLOSED";
 
@@ -27,10 +28,10 @@ const statusLabels: Record<TicketStatus, string> = {
 };
 
 const statusBadge: Record<TicketStatus, string> = {
-    OPEN: "bg-green-100 text-green-700",
-    IN_PROGRESS: "bg-yellow-100 text-yellow-800",
-    WAITING: "bg-orange-100 text-orange-800",
-    CLOSED: "bg-slate-200 text-slate-700",
+    OPEN: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300",
+    IN_PROGRESS: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200",
+    WAITING: "bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-200",
+    CLOSED: "bg-muted text-muted-foreground",
 };
 
 export default function DisplayTickets() {
@@ -79,12 +80,12 @@ export default function DisplayTickets() {
                 <h1 className="text-xl font-semibold">Ticketoversikt</h1>
             </header>
 
-            <div className="rounded-md border bg-white">
+            <div className="rounded-md border bg-card">
                 <div className="flex flex-col gap-2 border-b px-4 py-3 sm:flex-row sm:items-start sm:justify-between">
                     <div className="min-w-0">
-                        <p className="text-sm text-slate-600">Ticket #{ticket.ticketNo}</p>
+                        <p className="text-sm text-muted-foreground">Ticket #{ticket.ticketNo}</p>
                         <h2 className="break-words text-base font-semibold">{ticket.subject}</h2>
-                        <p className="break-words text-sm text-slate-600">{ticket.companyName}</p>
+                        <p className="break-words text-sm text-muted-foreground">{ticket.companyName}</p>
                     </div>
                     <span
                         className={`self-start whitespace-nowrap rounded-md px-2 py-1 text-xs font-medium ${statusBadge[ticket.status]}`}
@@ -102,13 +103,13 @@ export default function DisplayTickets() {
                     <section className="rounded-md border">
                         <h3 className="border-b px-3 py-2 text-sm font-medium">Kontaktinfo</h3>
                         <dl className="grid grid-cols-[max-content_minmax(0,1fr)] gap-x-4 gap-y-1 px-3 py-3 text-sm">
-                            <dt className="text-slate-600">Firmanavn</dt>
+                            <dt className="text-muted-foreground">Firmanavn</dt>
                             <dd className="min-w-0 break-words">{ticket.companyName}</dd>
-                            <dt className="text-slate-600">Navn</dt>
+                            <dt className="text-muted-foreground">Navn</dt>
                             <dd className="min-w-0 break-words">{ticket.contactName}</dd>
-                            <dt className="text-slate-600">Telefon</dt>
+                            <dt className="text-muted-foreground">Telefon</dt>
                             <dd className="min-w-0 break-words">{ticket.phone}</dd>
-                            <dt className="text-slate-600">E-post</dt>
+                            <dt className="text-muted-foreground">E-post</dt>
                             <dd className="min-w-0 break-words">{ticket.email}</dd>
                         </dl>
                     </section>
@@ -144,7 +145,9 @@ export default function DisplayTickets() {
                 </div>
             </div>
 
-            <div className="rounded-md border bg-white">
+            <TicketAi ticketId={ticket.id} status={ticket.status} />
+
+            <div className="rounded-md border bg-card">
                 <TicketNotes />
             </div>
         </div>

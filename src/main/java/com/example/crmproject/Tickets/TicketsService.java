@@ -4,8 +4,12 @@ import com.example.crmproject.Customer.Customer;
 import com.example.crmproject.Customer.CustomerRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -84,4 +88,47 @@ public class TicketsService {
         return repo.countByStatusNot(Tickets.TicketStatus.CLOSED);
     }
 
+    public List<Tickets> getIncomingTickets() {
+        return repo.findByCustomerIsNullOrderByCreatedDesc();
+    }
+
+    public Tickets assignCustomer(Long ticketId, Long customerId) {
+        Tickets ticket = repo.findById(ticketId)
+                .orElseThrow(() -> new RuntimeException("Ticket not found"));
+        Customer customer = customerRepo.findById(customerId)
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+        ticket.setCustomer(customer);
+        ticket.setCompanyName(customer.getCompanyName());
+        if ("(ukjent)".equals(ticket.getContactName())) {
+            ticket.setContactName(customer.getFirstName() + " " + customer.getLastName());
+        }
+        if ("(ukjent)".equals(ticket.getPhone())) {
+            ticket.setPhone(customer.getPhone());
+        }
+        ticket.setUpdatedLast(Instant.now());
+        return repo.save(ticket);
+    }
+
+    public List<WeekStats> weeklyStats(int weeks) {
+        if (weeks <= 0 || weeks > 52) weeks = 8;
+        ZoneId zone = ZoneId.systemDefault();
+        LocalDate currentMonday = LocalDate.now(zone).with(DayOfWeek.MONDAY);
+
+        List<WeekStats> result = new ArrayList<>();
+        for (int i = weeks - 1; i >= 0; i--) {
+            LocalDate weekStart = currentMonday.minusWeeks(i);
+            LocalDate weekEnd = weekStart.plusWeeks(1);
+
+            Instant from = weekStart.atStartOfDay(zone).toInstant();
+            Instant to = weekEnd.atStartOfDay(zone).toInstant();
+
+            long newCount = repo.countByCreatedBetween(from, to);
+            long closedCount = repo.countByStatusAndUpdatedLastBetween(
+                    Tickets.TicketStatus.CLOSED, from, to
+            );
+
+            result.add(new WeekStats(weekStart, newCount, closedCount));
+        }
+        return result;
+    }
 }

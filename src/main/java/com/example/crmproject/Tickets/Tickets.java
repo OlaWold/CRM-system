@@ -74,7 +74,7 @@ public class Tickets {
         @Column(name = "status", nullable = false)
         private TicketStatus status = TicketStatus.OPEN;
 
-        protected Tickets(){
+        public Tickets(){
         }
 
         public Tickets(

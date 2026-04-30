@@ -8,9 +8,9 @@ export default function MainLayout() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
     return (
-        <div className="relative h-screen overflow-hidden bg-background">
+        <div className="relative h-screen overflow-hidden bg-background text-foreground">
             <aside
-                className={`fixed inset-y-0 left-0 z-40 w-56 border-r bg-white transition-transform duration-200 ease-in-out ${
+                className={`fixed inset-y-0 left-0 z-40 w-56 border-r bg-card transition-transform duration-200 ease-in-out ${
                     isSidebarOpen ? "translate-x-0" : "-translate-x-full"
                 }`}
             >
@@ -19,7 +19,7 @@ export default function MainLayout() {
                     <button
                         type="button"
                         onClick={() => setIsSidebarOpen(false)}
-                        className="rounded-md p-1.5 transition hover:bg-slate-100"
+                        className="rounded-md p-1.5 transition hover:bg-accent"
                         aria-label="Lukk meny"
                     >
                         <X size={18} />
@@ -43,12 +43,12 @@ export default function MainLayout() {
                     isSidebarOpen ? "md:pl-56" : "md:pl-0"
                 }`}
             >
-                <header className="flex items-center gap-3 border-b bg-white px-4 py-2.5">
+                <header className="flex items-center gap-3 border-b bg-card px-4 py-2.5">
                     {!isSidebarOpen && (
                         <button
                             type="button"
                             onClick={() => setIsSidebarOpen(true)}
-                            className="rounded-md p-1.5 transition hover:bg-slate-100"
+                            className="rounded-md p-1.5 transition hover:bg-accent"
                             aria-label="Åpne meny"
                         >
                             <Menu size={20} />

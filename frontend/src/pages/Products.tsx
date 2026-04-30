@@ -5,7 +5,7 @@ export default function Products() {
         <div className="space-y-4">
             <header>
                 <h1 className="text-xl font-semibold">Produktkatalog</h1>
-                <p className="text-sm text-slate-600">Produkter som kan knyttes til kunder.</p>
+                <p className="text-sm text-muted-foreground">Produkter som kan knyttes til kunder.</p>
             </header>
             <ProductTable />
         </div>

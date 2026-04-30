@@ -55,18 +55,18 @@ export default function SearchCustomers({ onSelect }: SearchCustomersProps) {
             />
 
             {loading && (
-                <div className="absolute left-0 top-full z-50 mt-1 w-full rounded-md border bg-white p-2 text-sm text-slate-600 shadow-sm">
+                <div className="absolute left-0 top-full z-50 mt-1 w-full rounded-md border bg-popover p-2 text-sm text-muted-foreground shadow-sm">
                     Søker...
                 </div>
             )}
 
             {!loading && customers.length > 0 && (
-                <div className="absolute left-0 top-full z-50 mt-1 w-full rounded-md border bg-white shadow-sm">
+                <div className="absolute left-0 top-full z-50 mt-1 w-full rounded-md border bg-popover shadow-sm">
                     {customers.map((customer) => (
                         <button
                             key={customer.id}
                             type="button"
-                            className="block w-full px-3 py-2 text-left text-sm hover:bg-slate-100"
+                            className="block w-full px-3 py-2 text-left text-sm hover:bg-accent"
                             onClick={() => {
                                 lastSelectedName.current = customer.companyName;
                                 setQ(customer.companyName);

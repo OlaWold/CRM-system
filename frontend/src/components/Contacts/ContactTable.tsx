@@ -35,13 +35,13 @@ export default function ContactTable() {
 
             {showForm && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-                    <div className="w-full max-w-xl rounded-md border bg-white">
+                    <div className="w-full max-w-xl rounded-md border bg-card">
                         <div className="flex items-center justify-between border-b px-4 py-3">
                             <h2 className="text-base font-semibold">Ny kontakt</h2>
                             <button
                                 type="button"
                                 onClick={() => setShowForm(false)}
-                                className="rounded-md p-1.5 hover:bg-slate-100"
+                                className="rounded-md p-1.5 hover:bg-accent"
                                 aria-label="Lukk"
                             >
                                 <X size={18} />
@@ -57,7 +57,7 @@ export default function ContactTable() {
                 </div>
             )}
 
-            <div className="rounded-md border bg-white">
+            <div className="rounded-md border bg-card">
                 <Table>
                     <TableHeader>
                         <TableRow>
@@ -72,7 +72,7 @@ export default function ContactTable() {
                     <TableBody>
                         {contacts.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={6} className="py-6 text-center text-slate-500">
+                                <TableCell colSpan={6} className="py-6 text-center text-muted-foreground">
                                     Ingen kontakter registrert.
                                 </TableCell>
                             </TableRow>

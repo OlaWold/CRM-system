@@ -1,41 +1,43 @@
-# CRM System
+# CRM-system med AI
 
-Et webbasert CRM-system for håndtering av kunder, kontakter, tickets og notater.
+Et webbasert CRM med innebygd AI-assistanse — sammendrag av kundeaktivitet, svarforslag på saker, og automatisk håndtering av innkommende e-post som tickets. AI-modellen kjører lokalt via [Ollama](https://ollama.com), så ingen kundedata sendes til skytjenester.
 
-## Om prosjektet
+## AI-funksjoner
 
-Prosjektet gir en enkel oversikt over kunder og saker i ett system. Løsningen gjør det mulig å registrere kunder, knytte kontaktpersoner mot dem, opprette tickets, legge til notater på sakene, oppdatere status og søke i kundebasen.
+- **AI-sammendrag på kundekortet** — én klikk gir et kort sammendrag av kundens tickets, avtaler, kontakter og produkter, slik at en saksbehandler raskt får oversikt.
+- **AI-assistent på tickets** — sammendrag av sakshistorikken og forslag til svar til kunden (kun aktive saker). Svaret kan kopieres direkte til en e-post.
+- **Innkommende e-post → ticket** — IMAP-poller leser uleste mail, matcher avsenderen mot eksisterende kontakter eller kunder, og oppretter ticket på riktig kunde. Ukjente avsendere havner i en egen "Innkommende"-liste for manuell tildeling.
 
-## Funksjonalitet
+Hele AI-stacken er valgfri — appen fungerer fint uten Ollama, men da uten sammendrag og svarforslag.
 
-- opprette og vise kunder
-- søke etter kunder (på navn eller kundenummer)
-- registrere flere kontaktpersoner pr. kunde
-- opprette tickets knyttet til kunde
-- oppdatere ticketstatus (Åpen, Pågår, Venter, Lukket)
-- legge til notater på en ticket
-- vise tickets pr. kunde
-- filtrere tickets på status
+## Funksjonalitet for øvrig
 
-Flere funksjoner kommer fortløpende.
+- kunder med søk på navn/kundenummer
+- flere kontaktpersoner pr. kunde
+- tickets med status (Åpen, Pågår, Venter, Lukket), notater og kontakthistorikk
+- produktkatalog med kobling kunde-produkt
+- aktivitetskalender med møter, telefonsamtaler, oppgaver pr. kunde
+- dashboard med statistikk, ukesgraf og aktivitetsfeed
+- mørk modus
 
 ## Teknologistack
 
 **Frontend**
-- React 19
-- TypeScript
-- Vite
-- Tailwind CSS
-- shadcn/ui
+- React 19, TypeScript, Vite
+- Tailwind CSS, shadcn/ui
+- Inline SVG-graf (ingen ekstern chart-lib)
 
 **Backend**
-- Java 21
-- Spring Boot 4
+- Java 21, Spring Boot 4
 - Spring Data JPA / Hibernate
-- Spring Validation
+- Spring Validation, Spring Mail (Jakarta Mail)
+- RestClient mot Ollama
 
 **Database**
 - PostgreSQL
+
+**AI**
+- Ollama (lokal LLM, default `llama3.2` 3B; anbefalt `qwen2.5:7b` for bedre norsk)
 
 ## Kom i gang
 
@@ -43,84 +45,113 @@ Flere funksjoner kommer fortløpende.
 
 - Java 21
 - Node.js 20+ og npm
-- PostgreSQL (lokal eller via Docker)
+- Docker (anbefalt — kjører Postgres og Ollama lokalt)
 
-### 1. Klon prosjektet
+### Rask oppstart med Docker
 
 ```bash
 git clone https://github.com/OlaWold/CRM-system.git
 cd CRM-system
+./setup.sh
 ```
 
-### 2. Sett opp database
+`setup.sh` starter Postgres og Ollama i Docker, og laster ned default LLM (`llama3.2`, ~2 GB). Tar et par minutter første gang.
 
-Backend forventer en PostgreSQL-database `crm_project` på `localhost:5433`. Opprett databasen med dine egne credentials:
+Etterpå:
 
 ```bash
-createdb -h localhost -p 5433 -U <bruker> crm_project
+./mvnw spring-boot:run                          # backend på :8080
+cd frontend && npm install && npm run dev       # frontend på :5173
 ```
 
-Eller via Docker:
+For å stoppe Docker-tjenestene: `docker compose down`. For å starte igjen: `docker compose up -d`.
+
+### Manuell oppstart (uten Docker)
+
+**1. Postgres** — opprett databasen `crm_project` på `localhost:5433` med bruker `sa` og passord som matcher `src/main/resources/application.properties`. Hibernate (`ddl-auto=update`) lager tabellene ved første oppstart.
+
+**2. Ollama (valgfritt — for AI-funksjoner)**
 
 ```bash
-docker run --name crm-postgres \
-  -e POSTGRES_DB=crm_project \
-  -e POSTGRES_USER=sa \
-  -e POSTGRES_PASSWORD=<ditt-passord> \
-  -p 5433:5432 \
-  -d postgres:16
+brew install ollama        # macOS
+ollama serve               # i én terminal — la den stå
+ollama pull llama3.2       # i en annen terminal
 ```
 
-Oppdater `src/main/resources/application.properties` med riktig brukernavn og passord:
+**3. Start backend og frontend** som over.
 
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5433/crm_project
-spring.datasource.username=<bruker>
-spring.datasource.password=<passord>
-```
+## AI-konfigurasjon
 
-Hibernate er satt opp med `ddl-auto=update`, så tabellene opprettes automatisk ved første oppstart.
+### Velge modell
 
-### 3. Start backend
+Default er `llama3.2` (3B, 2 GB) fordi den kjører på de fleste maskiner med 8 GB RAM. Den er liten og ikke best på norsk.
 
-Fra rotmappen:
+For klart bedre norsk kvalitet, bytt til en større modell:
+
+| Modell | Størrelse | RAM | Norsk |
+|---|---|---|---|
+| `llama3.2` (default) | 2 GB | ~3 GB | OK |
+| `qwen2.5:7b` | 4.7 GB | ~6 GB | Bra |
+| `gemma2:9b` | 5.4 GB | ~7 GB | Bra |
+| `mistral:7b` | 4.1 GB | ~5 GB | OK |
+
+Last ned ønsket modell og overstyr default via miljøvariabel:
 
 ```bash
+export OLLAMA_MODEL=qwen2.5:7b
+ollama pull qwen2.5:7b              # uten Docker
+docker compose exec ollama ollama pull qwen2.5:7b   # med Docker
 ./mvnw spring-boot:run
 ```
 
-Backend kjører på `http://localhost:8080`. REST-endepunkter ligger under `/api/v1/`.
+Default i koden forblir `llama3.2` slik at andre uten kraftig maskin kan kjøre prosjektet rett ut av boksen.
 
-### 4. Start frontend
+### Innkommende e-post (IMAP)
 
-I et nytt terminalvindu:
+Backend kan poll-e en e-postkonto og automatisk lage tickets av uleste mail. Av som default.
+
+Aktiveres via miljøvariabler:
 
 ```bash
-cd frontend
-npm install
-npm run dev
+export MAIL_ENABLED=true
+export MAIL_HOST=imap.gmail.com           # eller outlook.office365.com osv.
+export MAIL_PORT=993
+export MAIL_USER=din-adresse@example.com
+export MAIL_PASSWORD=app-passord-her       # IKKE ditt vanlige passord
+export MAIL_FOLDER=INBOX
+export MAIL_POLL_INTERVAL_MS=60000         # 1 minutt
+./mvnw spring-boot:run
 ```
 
-Frontend kjører på `http://localhost:5173` og snakker med backend via proxy.
+**Gmail:** krever 2FA + app-passord, generer på https://myaccount.google.com/apppasswords.
+**Outlook/Office 365:** samme — 2FA + app-passord via https://account.microsoft.com/security.
+
+Backend leser uleste mailer fra konfigurert mappe og markerer dem som lest etter behandling. Avsendere matches mot `Contact.email` først, så `Customer.email`. Ukjente avsendere havner i "Innkommende"-listen.
+
+For testing uten ekte IMAP, POST en mail manuelt:
+
+```bash
+curl -X POST http://localhost:8080/api/v1/emails/import \
+  -H 'Content-Type: application/json' \
+  -d '{"fromEmail":"test@example.com","fromName":"Test","subject":"Hei","body":"En testmelding"}'
+```
+
+## Arkitektur
+
+Per-domene-pakker på backend (`Customer`, `Contact`, `Tickets`, `Notes`, `Activity`, `Product`, `CustomerProduct`, `Email`, `Ai`). Hver pakke har Entity, Repository, Service og Controller.
+
+REST-endepunkter under `/api/v1/`. Frontenden er en SPA som snakker med backend via Vite-proxy.
+
+AI-kallene går fra backend → Ollama lokalt — frontend ser bare et POST-endepunkt som returnerer en tekstrespons. Ingen LLM-data lagres mellom requestene; sammendrag genereres fersk hver gang.
 
 ## Videreutvikling
 
 - innlogging og brukerroller
-- aktivitetslogg på kunde og ticket
-- filtrering, sortering og søk på flere felt
 - vedlegg på saker
-- e-posthistorikk per kunde
-- statusendringer med tidsstempel
-- tildeling av sak til ansatt
-- kommentartråd på sak
-- frist og forfallsdato
-- visning av siste aktivitet på kunden
-- arkivering av inaktive kunder
-- egne kategorier eller tags på saker
-- SLA på tickets
+- prioritet og SLA på tickets
 - automatisk eskalering av gamle saker
-- varsler i systemet
-- intern chat eller kommentarer mellom ansatte
-- kundehistorikk på tvers av alle saker
-- kobling mot e-post så tickets kan opprettes fra innkommende mail
+- e-posthistorikk per kunde
+- arkivering av inaktive kunder
 - rapportside for statistikk over tid
+- streaming av AI-svar (token-for-token rendering)
+- vektor-søk i historikk for bedre AI-kontekst

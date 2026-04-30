@@ -19,7 +19,7 @@ const formatGrowth = (value: number | null) => {
 };
 
 const growthClass = (value: number | null) => {
-    if (value === null || value === 0) return "text-slate-900";
+    if (value === null || value === 0) return "text-foreground";
     return value > 0 ? "text-green-700" : "text-red-700";
 };
 
@@ -61,19 +61,19 @@ export default function CountCustomers() {
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {counts.map((stat) => (
-                    <div key={stat.label} className="rounded-md border bg-white p-4">
-                        <p className="text-sm text-slate-600">{stat.label}</p>
+                    <div key={stat.label} className="rounded-md border bg-card p-4">
+                        <p className="text-sm text-muted-foreground">{stat.label}</p>
                         <p className="mt-1 text-2xl font-semibold">{stat.value ?? "—"}</p>
                     </div>
                 ))}
 
                 {growths.map((stat) => (
-                    <div key={stat.label} className="rounded-md border bg-white p-4">
-                        <p className="text-sm text-slate-600">{stat.label}</p>
+                    <div key={stat.label} className="rounded-md border bg-card p-4">
+                        <p className="text-sm text-muted-foreground">{stat.label}</p>
                         <p className={`mt-1 text-2xl font-semibold ${growthClass(stat.value ?? null)}`}>
                             {stats === null ? "—" : formatGrowth(stat.value ?? null)}
                         </p>
-                        <p className="text-xs text-slate-500">vs. forrige periode</p>
+                        <p className="text-xs text-muted-foreground">vs. forrige periode</p>
                     </div>
                 ))}
             </div>

@@ -20,6 +20,8 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
             Activity.ActivityStatus status, Instant after
     );
 
+    List<Activity> findTop15ByOrderByCreatedDesc();
+
     @Query("select coalesce(max(a.activityNo), 0) from Activity a")
     long findMaxActivityNo();
 }

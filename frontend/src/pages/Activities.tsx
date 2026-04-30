@@ -13,7 +13,16 @@ import {
 } from "@/types/Activities";
 
 const startOfMonth = (date: Date) => new Date(date.getFullYear(), date.getMonth(), 1);
-const endOfMonth = (date: Date) => new Date(date.getFullYear(), date.getMonth() + 1, 1);
+
+const calendarGridRange = (monthAnchor: Date) => {
+    const first = startOfMonth(monthAnchor);
+    const offset = (first.getDay() + 6) % 7;
+    const gridStart = new Date(first);
+    gridStart.setDate(first.getDate() - offset);
+    const gridEnd = new Date(gridStart);
+    gridEnd.setDate(gridStart.getDate() + 42);
+    return { gridStart, gridEnd };
+};
 
 export default function Activities() {
     const [monthAnchor, setMonthAnchor] = useState(() => startOfMonth(new Date()));
@@ -24,20 +33,24 @@ export default function Activities() {
     const [selected, setSelected] = useState<Activity | null>(null);
 
     const loadMonth = useCallback(async () => {
-        const from = startOfMonth(monthAnchor);
-        const to = endOfMonth(monthAnchor);
+        const { gridStart, gridEnd } = calendarGridRange(monthAnchor);
+
         try {
-            const [rangeRes, upcomingRes] = await Promise.all([
-                fetch(
-                    `http://localhost:8080/api/v1/activities/range?from=${encodeURIComponent(
-                        from.toISOString()
-                    )}&to=${encodeURIComponent(to.toISOString())}`
-                ),
-                fetch("http://localhost:8080/api/v1/activities/upcoming"),
-            ]);
-            if (!rangeRes.ok || !upcomingRes.ok) throw new Error("Failed to load activities");
-            setActivities(await rangeRes.json());
-            setUpcoming(await upcomingRes.json());
+            const res = await fetch(
+                `http://localhost:8080/api/v1/activities/range?from=${encodeURIComponent(
+                    gridStart.toISOString()
+                )}&to=${encodeURIComponent(gridEnd.toISOString())}`
+            );
+            if (!res.ok) throw new Error("Failed to load month activities");
+            setActivities(await res.json());
+        } catch (error) {
+            console.error(error);
+        }
+
+        try {
+            const res = await fetch("http://localhost:8080/api/v1/activities/upcoming");
+            if (!res.ok) throw new Error("Failed to load upcoming activities");
+            setUpcoming(await res.json());
         } catch (error) {
             console.error(error);
         }
@@ -81,7 +94,7 @@ export default function Activities() {
             <header className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                     <h1 className="text-xl font-semibold">Aktiviteter</h1>
-                    <p className="text-sm text-slate-600">Avtaler og oppfølginger med kunder.</p>
+                    <p className="text-sm text-muted-foreground">Avtaler og oppfølginger med kunder.</p>
                 </div>
                 <Button
                     type="button"
@@ -105,10 +118,10 @@ export default function Activities() {
                 }}
             />
 
-            <section className="rounded-md border bg-white">
+            <section className="rounded-md border bg-card">
                 <h2 className="border-b px-3 py-2 text-sm font-medium">Kommende avtaler</h2>
                 {upcoming.length === 0 ? (
-                    <p className="px-3 py-3 text-sm text-slate-500">Ingen planlagte avtaler.</p>
+                    <p className="px-3 py-3 text-sm text-muted-foreground">Ingen planlagte avtaler.</p>
                 ) : (
                     <ul className="divide-y">
                         {upcoming.map((a) => (
@@ -116,9 +129,9 @@ export default function Activities() {
                                 <button
                                     type="button"
                                     onClick={() => setSelected(a)}
-                                    className="flex w-full flex-col gap-1 px-3 py-2 text-left text-sm hover:bg-slate-50 sm:flex-row sm:items-center sm:gap-4"
+                                    className="flex w-full flex-col gap-1 px-3 py-2 text-left text-sm hover:bg-accent sm:flex-row sm:items-center sm:gap-4"
                                 >
-                                    <span className="w-40 shrink-0 text-slate-600">
+                                    <span className="w-40 shrink-0 text-muted-foreground">
                                         {new Date(a.scheduledAt).toLocaleString("no-NO", {
                                             day: "2-digit",
                                             month: "short",
@@ -132,7 +145,7 @@ export default function Activities() {
                                         {activityTypeLabels[a.type]}
                                     </span>
                                     <span className="min-w-0 flex-1 truncate font-medium">{a.title}</span>
-                                    <span className="text-slate-600">
+                                    <span className="text-muted-foreground">
                                         {a.customer?.companyName ?? "—"}
                                     </span>
                                 </button>
@@ -144,13 +157,13 @@ export default function Activities() {
 
             {showForm && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-                    <div className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-md border bg-white">
+                    <div className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-md border bg-card">
                         <div className="flex items-center justify-between border-b px-4 py-3">
                             <h2 className="text-base font-semibold">Ny avtale</h2>
                             <button
                                 type="button"
                                 onClick={() => setShowForm(false)}
-                                className="rounded-md p-1.5 hover:bg-slate-100"
+                                className="rounded-md p-1.5 hover:bg-accent"
                                 aria-label="Lukk"
                             >
                                 <X size={18} />
@@ -169,7 +182,7 @@ export default function Activities() {
 
             {selected && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-                    <div className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-md border bg-white">
+                    <div className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-md border bg-card">
                         <div className="flex items-center justify-between border-b px-4 py-3">
                             <h2 className="text-base font-semibold">
                                 Avtale #{selected.activityNo} · {activityStatusLabels[selected.status]}
@@ -177,7 +190,7 @@ export default function Activities() {
                             <button
                                 type="button"
                                 onClick={() => setSelected(null)}
-                                className="rounded-md p-1.5 hover:bg-slate-100"
+                                className="rounded-md p-1.5 hover:bg-accent"
                                 aria-label="Lukk"
                             >
                                 <X size={18} />

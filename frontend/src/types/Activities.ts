@@ -38,9 +38,9 @@ export const activityStatusLabels: Record<ActivityStatus, string> = {
 };
 
 export const activityTypeColor: Record<ActivityType, string> = {
-    MEETING: "bg-blue-100 text-blue-800",
-    CALL: "bg-green-100 text-green-800",
-    EMAIL: "bg-purple-100 text-purple-800",
-    TASK: "bg-yellow-100 text-yellow-800",
-    OTHER: "bg-slate-100 text-slate-700",
+    MEETING: "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200",
+    CALL: "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200",
+    EMAIL: "bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-200",
+    TASK: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200",
+    OTHER: "bg-muted text-muted-foreground",
 };

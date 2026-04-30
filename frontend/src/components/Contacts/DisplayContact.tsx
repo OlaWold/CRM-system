@@ -29,22 +29,22 @@ export default function DisplayContact() {
                 <h1 className="text-xl font-semibold">Kontakt</h1>
             </header>
 
-            <div className="rounded-md border bg-white">
+            <div className="rounded-md border bg-card">
                 <div className="border-b px-4 py-3">
                     <h2 className="text-base font-semibold">{contact.firstName} {contact.lastName}</h2>
-                    <p className="text-sm text-slate-600">
+                    <p className="text-sm text-muted-foreground">
                         Kontaktnr. {contact.contactNo}
                         {contact.role ? ` · ${contact.role}` : ""}
                     </p>
                 </div>
 
                 <dl className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-1 px-4 py-4 text-sm">
-                    <dt className="text-slate-600">Bedrift</dt>
+                    <dt className="text-muted-foreground">Bedrift</dt>
                     <dd>
                         {contact.customer ? (
                             <Link
                                 to={`/customers/${contact.customer.id}`}
-                                className="text-slate-900 underline-offset-2 hover:underline"
+                                className="text-foreground underline-offset-2 hover:underline"
                             >
                                 {contact.customer.companyName}
                             </Link>
@@ -52,9 +52,9 @@ export default function DisplayContact() {
                             "—"
                         )}
                     </dd>
-                    <dt className="text-slate-600">Telefon</dt>
+                    <dt className="text-muted-foreground">Telefon</dt>
                     <dd>{contact.phone}</dd>
-                    <dt className="text-slate-600">E-post</dt>
+                    <dt className="text-muted-foreground">E-post</dt>
                     <dd>{contact.email}</dd>
                 </dl>
             </div>

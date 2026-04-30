@@ -49,6 +49,10 @@ public class ActivityService {
         );
     }
 
+    public List<Activity> getRecent() {
+        return repo.findTop15ByOrderByCreatedDesc();
+    }
+
     public Activity create(Activity.CreateActivityRequest req) {
         Customer customer = customerRepo.findById(req.customerId())
                 .orElseThrow(() -> new IllegalArgumentException("Fant ikke kunde med id " + req.customerId()));

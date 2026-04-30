@@ -118,12 +118,12 @@ export function CreateContact({ onSuccess, initialCustomer }: Props) {
                     disabled={lockedCustomer}
                 />
                 {!lockedCustomer && customers.length > 0 && (
-                    <div className="absolute left-0 top-full z-50 mt-1 w-full rounded-md border bg-white shadow-sm">
+                    <div className="absolute left-0 top-full z-50 mt-1 w-full rounded-md border bg-popover shadow-sm">
                         {customers.map((customer) => (
                             <button
                                 key={customer.id}
                                 type="button"
-                                className="block w-full px-3 py-2 text-left text-sm hover:bg-slate-100"
+                                className="block w-full px-3 py-2 text-left text-sm hover:bg-accent"
                                 onClick={() => {
                                     lastSelectedName.current = customer.companyName;
                                     setValue("companyName", customer.companyName);

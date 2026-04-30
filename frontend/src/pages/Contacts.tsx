@@ -5,7 +5,7 @@ export default function Contacts() {
         <div className="space-y-4">
             <header>
                 <h1 className="text-xl font-semibold">Kontakter</h1>
-                <p className="text-sm text-slate-600">Personer knyttet til kunder.</p>
+                <p className="text-sm text-muted-foreground">Personer knyttet til kunder.</p>
             </header>
             <ContactTable />
         </div>

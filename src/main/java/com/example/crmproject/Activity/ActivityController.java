@@ -1,7 +1,6 @@
 package com.example.crmproject.Activity;
 
 import jakarta.validation.Valid;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
@@ -34,8 +33,8 @@ public class ActivityController {
 
     @GetMapping("/range")
     public List<Activity> getInRange(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant from,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant to
+            @RequestParam Instant from,
+            @RequestParam Instant to
     ) {
         return service.getInRange(from, to);
     }
@@ -43,6 +42,11 @@ public class ActivityController {
     @GetMapping("/upcoming")
     public List<Activity> getUpcoming() {
         return service.getUpcoming();
+    }
+
+    @GetMapping("/recent")
+    public List<Activity> getRecent() {
+        return service.getRecent();
     }
 
     @PostMapping

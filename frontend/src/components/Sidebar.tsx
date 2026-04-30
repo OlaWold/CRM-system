@@ -15,6 +15,7 @@ const navItems: NavItem[] = [
     { label: "Kunder", path: "/customers" },
     { label: "Kontakter", path: "/contacts" },
     { label: "Tickets", path: "/tickets" },
+    { label: "Innkommende", path: "/incoming" },
     { label: "Produkter", path: "/products" },
     { label: "Aktiviteter", path: "/activities" },
     { label: "Innstillinger", path: "/settings" },
@@ -39,8 +40,8 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
                             aria-current={isActive(item.path) ? "page" : undefined}
                             className={`block rounded-md px-3 py-2 transition ${
                                 isActive(item.path)
-                                    ? "bg-slate-100 font-medium text-slate-900"
-                                    : "text-slate-700 hover:bg-slate-50"
+                                    ? "bg-accent font-medium text-foreground"
+                                    : "text-foreground/80 hover:bg-accent"
                             }`}
                         >
                             {item.label}
