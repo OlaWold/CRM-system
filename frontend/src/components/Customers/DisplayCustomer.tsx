@@ -4,7 +4,19 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { CreateContact } from "@/components/Contacts/CreateContact";
+import { AssignProduct } from "@/components/Products/AssignProduct";
+import { CreateActivity } from "@/components/Activities/CreateActivity";
 import { Contact } from "@/types/Contacts";
+import { CustomerProduct } from "@/types/Products";
+import {
+    Activity,
+    activityStatusLabels,
+    activityTypeColor,
+    activityTypeLabels,
+} from "@/types/Activities";
+
+const formatPrice = (value: number) =>
+    new Intl.NumberFormat("no-NO", { style: "currency", currency: "NOK" }).format(value);
 
 type TicketStatus = "OPEN" | "WAITING" | "IN_PROGRESS" | "CLOSED";
 
@@ -41,30 +53,58 @@ export default function DisplayCustomer() {
     const [customer, setCustomer] = useState<Customer | null>(null);
     const [tickets, setTickets] = useState<Ticket[]>([]);
     const [contacts, setContacts] = useState<Contact[]>([]);
+    const [products, setProducts] = useState<CustomerProduct[]>([]);
+    const [activities, setActivities] = useState<Activity[]>([]);
     const [showContactForm, setShowContactForm] = useState(false);
+    const [showProductForm, setShowProductForm] = useState(false);
+    const [showActivityForm, setShowActivityForm] = useState(false);
     const { id } = useParams();
     const navigate = useNavigate();
 
     const fetchData = useCallback(async () => {
         if (!id) return;
         try {
-            const [customerResponse, ticketResponse, contactResponse] = await Promise.all([
-                fetch(`http://localhost:8080/api/v1/customers/${id}`),
-                fetch(`http://localhost:8080/api/v1/tickets/customers/${id}`),
-                fetch(`http://localhost:8080/api/v1/contacts/customers/${id}`),
-            ]);
+            const [customerResponse, ticketResponse, contactResponse, productResponse, activityResponse] =
+                await Promise.all([
+                    fetch(`http://localhost:8080/api/v1/customers/${id}`),
+                    fetch(`http://localhost:8080/api/v1/tickets/customers/${id}`),
+                    fetch(`http://localhost:8080/api/v1/contacts/customers/${id}`),
+                    fetch(`http://localhost:8080/api/v1/customers/${id}/products`),
+                    fetch(`http://localhost:8080/api/v1/activities/customers/${id}`),
+                ]);
 
-            if (!customerResponse.ok || !ticketResponse.ok || !contactResponse.ok) {
+            if (
+                !customerResponse.ok ||
+                !ticketResponse.ok ||
+                !contactResponse.ok ||
+                !productResponse.ok ||
+                !activityResponse.ok
+            ) {
                 throw new Error("Could not fetch from database");
             }
 
             setCustomer(await customerResponse.json());
             setTickets(await ticketResponse.json());
             setContacts(await contactResponse.json());
+            setProducts(await productResponse.json());
+            setActivities(await activityResponse.json());
         } catch (error) {
             console.error(error);
         }
     }, [id]);
+
+    async function removeProduct(linkId: number) {
+        try {
+            const res = await fetch(
+                `http://localhost:8080/api/v1/customers/${id}/products/${linkId}`,
+                { method: "DELETE" }
+            );
+            if (!res.ok) throw new Error("Failed to remove product");
+            fetchData();
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     useEffect(() => {
         fetchData();
@@ -102,8 +142,43 @@ export default function DisplayCustomer() {
                     </section>
 
                     <section className="rounded-md border">
-                        <h3 className="border-b px-3 py-2 text-sm font-medium">Produkter</h3>
-                        <p className="px-3 py-3 text-sm text-slate-500">Ingen produkter registrert.</p>
+                        <div className="flex items-center justify-between border-b px-3 py-2">
+                            <h3 className="text-sm font-medium">Produkter</h3>
+                            <Button size="sm" variant="outline" onClick={() => setShowProductForm(true)}>
+                                Legg til produkt
+                            </Button>
+                        </div>
+                        {products.length === 0 ? (
+                            <p className="px-3 py-3 text-sm text-slate-500">Ingen produkter registrert.</p>
+                        ) : (
+                            <ul className="divide-y">
+                                {products.map((link) => (
+                                    <li
+                                        key={link.id}
+                                        className="flex items-center justify-between gap-3 px-3 py-2 text-sm"
+                                    >
+                                        <div className="min-w-0">
+                                            <p className="font-medium">{link.product.name}</p>
+                                            <p className="text-xs text-slate-500">
+                                                Lagt til {new Date(link.addedAt).toLocaleDateString("no-NO")}
+                                            </p>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <span className="whitespace-nowrap text-slate-700">
+                                                {formatPrice(link.product.price)}
+                                            </span>
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                onClick={() => removeProduct(link.id)}
+                                            >
+                                                Fjern
+                                            </Button>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
                     </section>
                 </div>
 
@@ -149,6 +224,52 @@ export default function DisplayCustomer() {
                                 )}
                             </TableBody>
                         </Table>
+                    </section>
+                </div>
+
+                <div className="px-4 pb-4">
+                    <section className="rounded-md border">
+                        <div className="flex items-center justify-between border-b px-3 py-2">
+                            <h3 className="text-sm font-medium">Avtaler</h3>
+                            <Button size="sm" variant="outline" onClick={() => setShowActivityForm(true)}>
+                                Ny avtale
+                            </Button>
+                        </div>
+                        {activities.length === 0 ? (
+                            <p className="px-3 py-3 text-sm text-slate-500">Ingen avtaler registrert.</p>
+                        ) : (
+                            <ul className="divide-y">
+                                {activities.map((a) => (
+                                    <li
+                                        key={a.id}
+                                        className="flex flex-col gap-1 px-3 py-2 text-sm sm:flex-row sm:items-center sm:gap-4"
+                                    >
+                                        <span className="w-40 shrink-0 text-slate-600">
+                                            {new Date(a.scheduledAt).toLocaleString("no-NO", {
+                                                day: "2-digit",
+                                                month: "short",
+                                                year: "numeric",
+                                                hour: "2-digit",
+                                                minute: "2-digit",
+                                            })}
+                                        </span>
+                                        <span
+                                            className={`inline-block w-fit rounded px-1.5 py-0.5 text-xs ${activityTypeColor[a.type]}`}
+                                        >
+                                            {activityTypeLabels[a.type]}
+                                        </span>
+                                        <span
+                                            className={`min-w-0 flex-1 font-medium ${a.status !== "PLANNED" ? "text-slate-500 line-through" : ""}`}
+                                        >
+                                            {a.title}
+                                        </span>
+                                        <span className="text-xs text-slate-500">
+                                            {activityStatusLabels[a.status]}
+                                        </span>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
                     </section>
                 </div>
 
@@ -217,6 +338,57 @@ export default function DisplayCustomer() {
                             initialCustomer={{ id: customer.id, companyName: customer.companyName }}
                             onSuccess={() => {
                                 setShowContactForm(false);
+                                fetchData();
+                            }}
+                        />
+                    </div>
+                </div>
+            )}
+
+            {showProductForm && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+                    <div className="w-full max-w-xl rounded-md border bg-white">
+                        <div className="flex items-center justify-between border-b px-4 py-3">
+                            <h2 className="text-base font-semibold">Legg til produkt</h2>
+                            <button
+                                type="button"
+                                onClick={() => setShowProductForm(false)}
+                                className="rounded-md p-1.5 hover:bg-slate-100"
+                                aria-label="Lukk"
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+                        <AssignProduct
+                            customerId={customer.id}
+                            excludeProductIds={products.map((link) => link.product.id)}
+                            onSuccess={() => {
+                                setShowProductForm(false);
+                                fetchData();
+                            }}
+                        />
+                    </div>
+                </div>
+            )}
+
+            {showActivityForm && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+                    <div className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-md border bg-white">
+                        <div className="flex items-center justify-between border-b px-4 py-3">
+                            <h2 className="text-base font-semibold">Ny avtale</h2>
+                            <button
+                                type="button"
+                                onClick={() => setShowActivityForm(false)}
+                                className="rounded-md p-1.5 hover:bg-slate-100"
+                                aria-label="Lukk"
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+                        <CreateActivity
+                            initialCustomer={{ id: customer.id, companyName: customer.companyName }}
+                            onSuccess={() => {
+                                setShowActivityForm(false);
                                 fetchData();
                             }}
                         />

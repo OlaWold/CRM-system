@@ -17,10 +17,8 @@ const Dashboard = () => {
                 <SearchCustomers onSelect={(customer) => navigate(`/customers/${customer.id}`)} />
             </div>
 
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <CountTickets />
-                <CountCustomers />
-            </div>
+            <CountTickets />
+            <CountCustomers />
         </div>
     );
 };

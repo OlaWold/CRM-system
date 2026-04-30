@@ -23,6 +23,11 @@ public class CustomerController {
         return service.countCustomers();
     }
 
+    @GetMapping("/stats")
+    public CustomerStats stats() {
+        return service.stats();
+    }
+
     @GetMapping
     public List<Customer> getAllCustomers() {
         return service.getAllCustomers();

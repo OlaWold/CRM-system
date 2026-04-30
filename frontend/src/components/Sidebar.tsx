@@ -15,6 +15,7 @@ const navItems: NavItem[] = [
     { label: "Kunder", path: "/customers" },
     { label: "Kontakter", path: "/contacts" },
     { label: "Tickets", path: "/tickets" },
+    { label: "Produkter", path: "/products" },
     { label: "Aktiviteter", path: "/activities" },
     { label: "Innstillinger", path: "/settings" },
 ];

@@ -2,6 +2,7 @@ package com.example.crmproject.Customer;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,5 +23,9 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     @Query("select coalesce(max(c.customerNo), 0) from Customer c")
     long findMaxCustomerNo();
+
+    long countByCreatedAfter(Instant after);
+
+    long countByCreatedBetween(Instant from, Instant to);
 
 }

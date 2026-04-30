@@ -4,7 +4,9 @@ import com.example.crmproject.Tickets.Tickets;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +37,10 @@ public class Customer {
 
     @Column(name = "orgNumber", nullable = false, unique = true)
     private String orgNumber;
+
+    @CreationTimestamp
+    @Column(name = "created", updatable = false)
+    private Instant created;
 
     @OneToMany(mappedBy = "customer")
     private List<Tickets> tickets = new ArrayList<>();
@@ -88,5 +94,7 @@ public class Customer {
     public void setOrgNumber(String orgNumber) {
         this.orgNumber = orgNumber;
     }
+
+    public Instant getCreated() { return created; }
 }
 
