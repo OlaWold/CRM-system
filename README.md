@@ -1,6 +1,6 @@
 # CRM-system med AI
 
-Et webbasert CRM med innebygd AI-assistanse — sammendrag av kundeaktivitet, svarforslag på saker, og automatisk håndtering av innkommende e-post som tickets. AI-modellen kjører lokalt via [Ollama](https://ollama.com), så ingen kundedata sendes til skytjenester.
+Et webbasert CRM med innebygd AI-assistanse; sammendrag av kundeaktivitet, svarforslag på saker, og automatisk håndtering av innkommende e-post som tickets. AI-modellen kjører lokalt via [Ollama](https://ollama.com), så ingen kundedata sendes til skytjenester.
 
 ## AI-funksjoner
 
