@@ -111,7 +111,6 @@ Frontend kjører på `http://localhost:5173` og snakker med backend via proxy.
 - vedlegg på saker
 - e-posthistorikk per kunde
 - statusendringer med tidsstempel
-- prioritet på tickets: lav, medium, høy, kritisk
 - tildeling av sak til ansatt
 - kommentartråd på sak
 - frist og forfallsdato
